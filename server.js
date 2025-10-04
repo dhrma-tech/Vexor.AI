@@ -2,7 +2,9 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const axios = require('axios'); // Use axios for API calls
+const axios = require('axios');
+const { VM } = require('vm2');
+const prettier = require('prettier');
 const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -13,12 +15,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- Cerebras API Configuration ---
-const CEREBRAS_API_URL = "https://api.cerebras.com/v1/completions"; // Correct API endpoint
+const CEREBRAS_API_URL = "https://api.cerebras.com/v1/completions";
 
 // --- Prompts for AI Personalities ---
 const PROMPT_TEMPLATES = {
     "engineer": `You are a professional Senior Software Engineer. Write a complete and robust test suite for the following JavaScript code using the Jest framework. Cover typical use cases and follow best practices. Your response must be only the JavaScript code for the tests. Do not include the original function, explanations, or any markdown formatting.\n\nCode:\n{user_code}`,
-    "drill_sergeant": `You are a ruthless QA Automation Lead specializing in breaking software. Generate a vast array of punishing test cases for the following JavaScript code using Jest. Focus on edge cases, invalid inputs, error conditions, and boundary values. Your response must be only the JavaScript code for the tests. Do not include the original function, explanations, or any markdown formatting.\n\nCode:\n{user_code}`
+    "drill_sergeant": `You are a ruthless QA Automation Lead specializing in breaking software. Generate a vast array of punishing test cases for the following JavaScript code using Jest. Focus on edge cases, invalid inputs, error conditions, and boundary values. Your response must be only the JavaScript code for the tests. Do not include the original function, explanations, or any markdown formatting.\n\nCode:\n{user_code}`,
+    "beginner": `You are a friendly coding tutor. Create a simple and easy-to-understand set of tests for the following JavaScript code using Jest. Explain each test case with a simple comment. Your response must be only the JavaScript code for the tests. Do not include the original function, explanations, or any markdown formatting.\n\nCode:\n{user_code}`,
+    "security_expert": `You are a security expert. Analyze the following JavaScript code for potential security vulnerabilities and write Jest tests to exploit them. Focus on injection, XSS, and other common attack vectors. Your response must be only the JavaScript code for the tests. Do not include the original function, explanations, or any markdown formatting.\n\nCode:\n{user_code}`,
+    "performance_analyst": `You are a performance analyst. Write Jest tests that benchmark the performance of the following JavaScript code. Include tests for execution time and memory usage if possible. Your response must be only the JavaScript code for the tests. Do not include the original function, explanations, or any markdown formatting.\n\nCode:\n{user_code}`
 };
 
 // --- Middleware ---
@@ -37,16 +42,45 @@ async function runInSandbox(userCode, testCode) {
         await fs.promises.writeFile(testCodePath, testCode);
 
         return new Promise((resolve, reject) => {
-            // NOTE: This requires Jest to be installed globally or as a dev dependency in your project.
-            // If it's not installed, run: npm install --save-dev jest
-            exec(`jest --json ${testCodePath}`, { cwd: tempDir, timeout: 15000 }, (error, stdout, stderr) => {
-                if (stderr) {
-                    console.error('Sandbox stderr:', stderr);
-                    reject(new Error(`Server error during test execution: ${stderr}`));
-                    return;
+            const vm = new VM({
+                timeout: 15000,
+                sandbox: {
+                    require: (moduleName) => {
+                        if (moduleName === 'jest') {
+                            return require('jest');
+                        }
+                        throw new Error(`Module '${moduleName}' is not allowed.`);
+                    },
+                    console: console
                 }
-                resolve(stdout);
             });
+
+            const jestCommand = `
+                const jest = require('jest');
+                async function runTests() {
+                    const project = '${tempDir}';
+                    const config = {
+                        roots: [project],
+                        testMatch: ['**/*.test.js'],
+                        json: true,
+                        reporters: [], // Suppress console output from Jest
+                    };
+                    try {
+                        const { results } = await jest.runCLI(config, [project]);
+                        return results;
+                    } catch (error) {
+                        return { error: error.message };
+                    }
+                }
+                runTests();
+            `;
+
+            try {
+                const result = vm.run(jestCommand);
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
         });
 
     } finally {
@@ -58,20 +92,22 @@ async function runInSandbox(userCode, testCode) {
 app.get('/health', (req, res) => res.status(200).send({ status: 'ok' }));
 
 app.post('/assert', async (req, res) => {
-    const { code, personality } = req.body;
-    if (!code || !personality) {
-        return res.status(400).send({ error: 'Code and personality are required.' });
+    const { code, personality, language } = req.body;
+    if (!code || !personality || !language) {
+        return res.status(400).send({ error: 'Code, personality, and language are required.' });
+    }
+    if (language !== 'javascript') {
+        return res.status(400).send({ error: 'Only JavaScript is currently supported.' });
     }
 
     try {
-        // --- 1. Generate Tests using Cerebras AI with axios ---
         const promptTemplate = PROMPT_TEMPLATES[personality] || PROMPT_TEMPLATES["engineer"];
         const formattedPrompt = promptTemplate.replace('{user_code}', code);
 
         const response = await axios.post(CEREBRAS_API_URL, {
             model: "llama3.1-8b",
             prompt: formattedPrompt,
-            max_tokens: 500,
+            max_tokens: 1000,
         }, {
             headers: {
                 'Authorization': `Bearer ${process.env.CEREBRAS_API_KEY}`,
@@ -81,12 +117,15 @@ app.post('/assert', async (req, res) => {
 
         let generated_tests = response.data.choices[0].text;
         generated_tests = generated_tests.replace(/```javascript/g, "").replace(/```/g, "").trim();
+        generated_tests = await prettier.format(generated_tests, { parser: "babel" });
 
-        // --- 2. Run in Sandbox ---
         const jestOutput = await runInSandbox(code, generated_tests);
-        const results = JSON.parse(jestOutput);
 
-        // --- 3. Parse Results ---
+        if (jestOutput.error) {
+            throw new Error(jestOutput.error);
+        }
+
+        const results = jestOutput;
         const passed = results.numPassedTests;
         const failed = results.numFailedTests;
         const total_tests = results.numTotalTests;

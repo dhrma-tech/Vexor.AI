@@ -17,6 +17,14 @@
 
     <main>
         <form id="code-form">
+            <div class="language-selector">
+                <label for="language">Language:</label>
+                <select id="language" name="language">
+                    <option value="javascript" selected>JavaScript</option>
+                    <option value="python" disabled>Python (coming soon)</option>
+                    <option value="java" disabled>Java (coming soon)</option>
+                </select>
+            </div>
             <textarea id="user-code" class="code-editor" placeholder="Paste your JavaScript function here..."></textarea>
             <div class="controls">
                 <div class="personality-selector">
@@ -24,6 +32,9 @@
                         <legend>Choose a personality:</legend>
                         <label><input type="radio" name="personality" value="engineer" checked> The Engineer</label>
                         <label><input type="radio" name="personality" value="drill_sergeant"> The Drill Sergeant</label>
+                        <label><input type="radio" name="personality" value="beginner"> The Beginner</label>
+                        <label><input type="radio" name="personality" value="security_expert"> The Security Expert</label>
+                        <label><input type="radio" name="personality" value="performance_analyst"> The Performance Analyst</label>
                     </fieldset>
                 </div>
                 <div class="submit-container">

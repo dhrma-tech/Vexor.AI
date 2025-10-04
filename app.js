@@ -4,6 +4,7 @@ const submitButton = document.getElementById('submit-button');
 const loader = document.getElementById('loader');
 const resultsSection = document.getElementById('results-section');
 const userCodeInput = document.getElementById('user-code');
+const languageSelector = document.getElementById('language');
 
 // --- Event Listener ---
 form.addEventListener('submit', async (e) => {
@@ -11,6 +12,7 @@ form.addEventListener('submit', async (e) => {
 
     const userCode = userCodeInput.value;
     const personality = document.querySelector('input[name="personality"]:checked').value;
+    const language = languageSelector.value;
 
     if (!userCode.trim()) {
         alert('Please paste some code to test.');
@@ -24,19 +26,19 @@ form.addEventListener('submit', async (e) => {
 
     try {
         // --- API Call ---
-        // This is where we talk to our backend server!
         const response = await fetch('/assert', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 code: userCode,
                 personality: personality,
+                language: language,
             }),
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+            const errorData = await response.json();
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error}`);
         }
 
         const data = await response.json();
@@ -45,8 +47,7 @@ form.addEventListener('submit', async (e) => {
     } catch (error) {
         console.error('Error:', error);
         const outputElement = document.getElementById('sandbox-output');
-        outputElement.textContent = `An error occurred while contacting the server:\n${error.message}`;
-        // Make sure the results section is visible to show the error
+        outputElement.textContent = `An error occurred:\n${error.message}`;
         document.getElementById('generated-tests').textContent = 'N/A';
         resultsSection.style.display = 'block';
     } finally {
