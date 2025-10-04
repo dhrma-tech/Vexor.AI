@@ -1,1 +1,18 @@
-
+{
+  "name": "vexor.ai",
+  "version": "1.0.0",
+  "description": "VEXOR is an interactive web platform that acts as a sparring partner for your code. Paste in your functions, and our AI will generate a comprehensive test suite to challenge your logic, helping you find edge cases and improve reliability.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  }
+}

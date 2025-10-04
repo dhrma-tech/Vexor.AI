@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXOR.AI - Your Code's Sparring Partner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>VEXOR.AI</h1>
+        <p>Your code deserves a sparring partner.</p>
+    </header>
+
+    <main>
+        <form id="code-form">
+            <textarea id="user-code" class="code-editor" placeholder="Paste your JavaScript function here..."></textarea>
+            <div class="controls">
+                <div class="personality-selector">
+                    <fieldset>
+                        <legend>Choose a personality:</legend>
+                        <label><input type="radio" name="personality" value="engineer" checked> The Engineer</label>
+                        <label><input type="radio" name="personality" value="drill_sergeant"> The Drill Sergeant</label>
+                    </fieldset>
+                </div>
+                <div class="submit-container">
+                    <div class="loader" id="loader"></div>
+                    <button type="submit" class="submit-btn" id="submit-button">Assert!</button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <section class="results" id="results-section">
+        <div id="score-card" class="score-card">
+            <h2 id="score"></h2>
+            <p id="score-summary"></p>
+        </div>
+        <div class="result-details">
+            <div class="result-box">
+                <h3>Generated Tests</h3>
+                <pre id="generated-tests"></pre>
+            </div>
+            <div class="result-box">
+                <h3>Sandbox Output</h3>
+                <pre id="sandbox-output"></pre>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
