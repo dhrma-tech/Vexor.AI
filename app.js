@@ -47,8 +47,17 @@ form.addEventListener('submit', async (e) => {
     } catch (error) {
         console.error('Error:', error);
         const outputElement = document.getElementById('sandbox-output');
+        const generatedTestsElement = document.getElementById('generated-tests');
+        
         outputElement.textContent = `An error occurred:\n${error.message}`;
-        document.getElementById('generated-tests').textContent = 'N/A';
+        generatedTestsElement.textContent = 'N/A';
+        
+        // Also update the score card to show an error state
+        const scoreCard = document.getElementById('score-card');
+        scoreCard.className = 'score-card fail';
+        document.getElementById('score').textContent = 'Error';
+        document.getElementById('score-summary').textContent = 'Could not run tests.';
+
         resultsSection.style.display = 'block';
     } finally {
         // --- UI Updates: Stop Loading ---

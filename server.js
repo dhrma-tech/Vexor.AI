@@ -3,12 +3,11 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const axios = require('axios');
-const { VM } = require('vm2');
-const prettier = require('prettier');
 const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const prettier = require('prettier');
 
 // --- App Initialization ---
 const app = express();
@@ -38,55 +37,47 @@ async function runInSandbox(userCode, testCode) {
     const testCodePath = path.join(tempDir, 'user_code.test.js');
 
     try {
-        await fs.promises.writeFile(userCodePath, userCode);
-        await fs.promises.writeFile(testCodePath, testCode);
+        // We need to export the function so that the test file can import it.
+        const codeToRun = `
+            ${userCode}
+            module.exports = { ${getFunctionName(userCode)} };
+        `;
+
+        await fs.promises.writeFile(userCodePath, codeToRun);
+
+        // We need to import the function in the test file.
+        const testCodeToRun = `
+            const { ${getFunctionName(userCode)} } = require('./user_code.js');
+            ${testCode}
+        `;
+        await fs.promises.writeFile(testCodePath, testCodeToRun);
+
 
         return new Promise((resolve, reject) => {
-            const vm = new VM({
-                timeout: 15000,
-                sandbox: {
-                    require: (moduleName) => {
-                        if (moduleName === 'jest') {
-                            return require('jest');
-                        }
-                        throw new Error(`Module '${moduleName}' is not allowed.`);
-                    },
-                    console: console
-                }
-            });
-
-            const jestCommand = `
-                const jest = require('jest');
-                async function runTests() {
-                    const project = '${tempDir}';
-                    const config = {
-                        roots: [project],
-                        testMatch: ['**/*.test.js'],
-                        json: true,
-                        reporters: [], // Suppress console output from Jest
-                    };
-                    try {
-                        const { results } = await jest.runCLI(config, [project]);
-                        return results;
-                    } catch (error) {
-                        return { error: error.message };
+            exec(`jest --json ${testCodePath}`, { cwd: tempDir, timeout: 15000 }, (error, stdout, stderr) => {
+                if (error) {
+                    // Jest will exit with a non-zero code if tests fail, which is not a server error.
+                    // We check for stderr to see if there was a true error.
+                    if (stderr) {
+                        reject(new Error(`Server error during test execution: ${stderr}`));
+                        return;
                     }
                 }
-                runTests();
-            `;
-
-            try {
-                const result = vm.run(jestCommand);
-                resolve(result);
-            } catch (error) {
-                reject(error);
-            }
+                resolve(stdout);
+            });
         });
 
     } finally {
         fs.promises.rm(tempDir, { recursive: true, force: true });
     }
 }
+
+// Helper function to extract function name from user's code
+function getFunctionName(code) {
+    const match = code.match(/function\s+([a-zA-Z0-9_]+)\s*\(/);
+    return match ? match[1] : '';
+}
+
 
 // --- API Endpoints ---
 app.get('/health', (req, res) => res.status(200).send({ status: 'ok' }));
@@ -120,12 +111,8 @@ app.post('/assert', async (req, res) => {
         generated_tests = await prettier.format(generated_tests, { parser: "babel" });
 
         const jestOutput = await runInSandbox(code, generated_tests);
+        const results = JSON.parse(jestOutput);
 
-        if (jestOutput.error) {
-            throw new Error(jestOutput.error);
-        }
-
-        const results = jestOutput;
         const passed = results.numPassedTests;
         const failed = results.numFailedTests;
         const total_tests = results.numTotalTests;
@@ -136,7 +123,7 @@ app.post('/assert', async (req, res) => {
             total_tests,
             passed,
             failed,
-            output: results.testResults[0]?.assertionResults.map(r => `[${r.status.toUpperCase()}] ${r.title}`).join('\n') || "Tests ran, but no output was captured.",
+            output: results.testResults[0]?.assertionResults.map(r => `[${r.status.toUpperCase()}] ${r.title}`).join('\n') || "No assertion results found.",
             generated_tests,
         });
 
