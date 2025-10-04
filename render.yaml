@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: vexor-ai
+    env: node
+    plan: free
+    buildCommand: "npm install && npm install --save-dev jest"
+    startCommand: "node server.js"
+    envVars:
+      - key: CEREBRAS_API_KEY
+        sync: false # We will set this in the Render dashboard
