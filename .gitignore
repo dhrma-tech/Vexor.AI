@@ -42,3 +42,4 @@ Thumbs.db
 # Test reports and coverage
 coverage/
 .nyc_output/
+.env

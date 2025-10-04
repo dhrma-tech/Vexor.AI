@@ -24,7 +24,7 @@ const PROMPT_TEMPLATES = {
 // --- Middleware ---
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(__dirname));
 
 // --- Sandbox Function ---
 async function runInSandbox(userCode, testCode) {
