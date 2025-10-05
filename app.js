@@ -51,8 +51,7 @@ async function generateTests() {
     }
 
     const data = await response.json();
-    // For a better user experience, consider rendering this in a modal or a new editor pane
-    alert('Generated Tests:\n\n' + data.generated_tests);
+    alert('Generated Tests:\n\n' + data.generated_tests); // Or render in a modal/editor pane
 
   } catch (error) {
     console.error('Error:', error);

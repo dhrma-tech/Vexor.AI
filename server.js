@@ -28,9 +28,7 @@ const PROMPT_TEMPLATES = {
 // --- Middleware ---
 app.use(cors());
 app.use(express.json());
-// Note: express.static is not strictly necessary on the backend if the frontend is separate
-// but it doesn't hurt to leave it.
-app.use(express.static(__dirname)); 
+app.use(express.static(__dirname));
 
 // --- Sandbox Function ---
 async function runInSandbox(userCode, testCode) {
@@ -41,7 +39,7 @@ async function runInSandbox(userCode, testCode) {
     try {
         const functionName = getFunctionName(userCode);
         if (!functionName) {
-            throw new Error("Could not determine the function name to export.");
+            throw new Error("Could not automatically determine the function name to export.");
         }
         
         const codeToRun = `${userCode}\nmodule.exports = { ${functionName} };`;
@@ -51,37 +49,34 @@ async function runInSandbox(userCode, testCode) {
         await fs.promises.writeFile(testCodePath, testCodeToRun);
 
         return new Promise((resolve, reject) => {
-            exec(`jest --json --testPathPattern=${tempDir}`, { cwd: tempDir, timeout: 15000 }, (error, stdout, stderr) => {
-                if (stderr) {
-                    console.error(`Jest stderr: ${stderr}`);
+            exec(`jest --json --testPathPattern=${tempDir.replace(/\\/g, '/')}`, { cwd: tempDir, timeout: 15000 }, (error, stdout, stderr) => {
+                if (stderr && !stdout) { // Only reject if there's a real execution error
+                    return reject(new Error(`Server error during test execution: ${stderr}`));
                 }
-                // Jest exits with a non-zero code for failing tests, but stdout will still have the JSON results.
-                // We resolve with stdout if it exists, otherwise we reject.
+                // Jest exits with non-zero code for failing tests, but that's expected.
+                // We always resolve with stdout if it exists, as it contains the JSON results.
                 if (stdout) {
                     resolve(stdout);
                 } else {
-                    reject(new Error(`Test execution failed. Error: ${error}, Stderr: ${stderr}`));
+                    reject(new Error(`Test execution failed and produced no output. Error: ${error}`));
                 }
             });
         });
 
     } finally {
-        fs.promises.rm(tempDir, { recursive: true, force: true }).catch(err => console.error(`Failed to remove temp directory: ${err}`));
+        fs.promises.rm(tempDir, { recursive: true, force: true }).catch(err => console.error(`Failed to clean up temp directory: ${err}`));
     }
 }
 
 // Helper function to extract function name from user's code
 function getFunctionName(code) {
-    const match = code.match(/function\s+([a-zA-Z0-9_]+)\s*\(/) || code.match(/const\s+([a-zA-Z0-9_]+)\s*=\s*\(/);
+    // Look for `function functionName()` or `const functionName = () =>`
+    const match = code.match(/(?:function\s+|const\s+)([a-zA-Z0-9_]+)\s*(?:=|\()/);
     return match ? match[1] : null;
 }
 
-
 // --- API Endpoints ---
-app.get('/', (req, res) => {
-    res.status(200).send('Vexor.AI backend is running.');
-});
-
+app.get('/', (req, res) => res.status(200).send('Vexor.AI backend is running.'));
 app.get('/health', (req, res) => res.status(200).send({ status: 'ok' }));
 
 app.post('/assert', async (req, res) => {
@@ -97,7 +92,7 @@ app.post('/assert', async (req, res) => {
         const promptTemplate = PROMPT_TEMPLATES[personality] || PROMPT_TEMPLATES["engineer"];
         const formattedPrompt = promptTemplate.replace('{user_code}', code);
 
-        const response = await axios.post(CEREBRAS_API_URL, {
+        const apiResponse = await axios.post(CEREBRAS_API_URL, {
             model: "llama3.1-8b",
             prompt: formattedPrompt,
             max_tokens: 1000,
@@ -108,7 +103,7 @@ app.post('/assert', async (req, res) => {
             }
         });
 
-        let generated_tests = response.data.choices[0].text;
+        let generated_tests = apiResponse.data.choices[0].text;
         generated_tests = generated_tests.replace(/```javascript/g, "").replace(/```/g, "").trim();
         generated_tests = await prettier.format(generated_tests, { parser: "babel" });
 
@@ -116,7 +111,7 @@ app.post('/assert', async (req, res) => {
         const results = JSON.parse(jestOutput);
 
         res.status(200).send({
-            score: Math.round(results.numPassedTests / results.numTotalTests * 100) || 0,
+            score: results.numTotalTests > 0 ? Math.round((results.numPassedTests / results.numTotalTests) * 100) : 0,
             total_tests: results.numTotalTests,
             passed: results.numPassedTests,
             failed: results.numFailedTests,
@@ -130,7 +125,7 @@ app.post('/assert', async (req, res) => {
     }
 });
 
-// --- New PageSpeed Insights Endpoint ---
+// --- PageSpeed Insights Endpoint (with improved error handling) ---
 app.post('/pagespeed', async (req, res) => {
     const { url } = req.body;
     if (!url) {
@@ -146,15 +141,19 @@ app.post('/pagespeed', async (req, res) => {
 
     try {
         const response = await axios.get(API_URL);
-        const { lighthouseResult } = response.data;
-        const { categories } = lighthouseResult;
 
-        res.status(200).send({
-            performance: Math.round((categories.performance.score || 0) * 100),
-            accessibility: Math.round((categories.accessibility.score || 0) * 100),
-            bestPractices: Math.round((categories['best-practices'].score || 0) * 100),
-            seo: Math.round((categories.seo.score || 0) * 100),
-        });
+        if (response.data.lighthouseResult && response.data.lighthouseResult.categories) {
+            const { categories } = response.data.lighthouseResult;
+            res.status(200).send({
+                performance: Math.round((categories.performance?.score || 0) * 100),
+                accessibility: Math.round((categories.accessibility?.score || 0) * 100),
+                bestPractices: Math.round((categories['best-practices']?.score || 0) * 100),
+                seo: Math.round((categories.seo?.score || 0) * 100),
+            });
+        } else {
+            const errorMessage = response.data.error?.message || "The URL could not be audited by Google PageSpeed.";
+            return res.status(400).send({ error: errorMessage });
+        }
 
     } catch (error) {
         console.error('Error fetching PageSpeed data:', error.response ? error.response.data : error.message);
@@ -162,8 +161,9 @@ app.post('/pagespeed', async (req, res) => {
     }
 });
 
-
 // --- Server Listener ---
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`✅ VEXOR.AI server listening on port ${PORT}`);
 });
+
+module.exports = { app, server }; // Export for testing
