@@ -33,25 +33,17 @@ async function generateTests() {
   btn.disabled = true;
 
   try {
-    const response = await fetch(`${RENDER_URL}/assert`, { // <-- Use the backend URL
+    const response = await fetch(`${RENDER_URL}/assert`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        code,
-        personality,
-        language,
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, personality, language }),
     });
-
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || 'Something went wrong');
     }
-
     const data = await response.json();
-    alert('Generated Tests:\n\n' + data.generated_tests); // Or render in a modal/editor pane
+    alert('Generated Tests:\n\n' + data.generated_tests);
 
   } catch (error) {
     console.error('Error:', error);
@@ -62,11 +54,31 @@ async function generateTests() {
   }
 }
 
-// --- Event Listener for Test Generation Button ---
-document.getElementById('test-free').addEventListener('click', generateTests);
-
-// --- PageSpeed Insights Feature ---
+// --- Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
+    // Test Generation
+    document.getElementById('test-free').addEventListener('click', generateTests);
+
+    // "Start Free" Buttons
+    document.querySelectorAll('.start-free-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            document.getElementById('editor').scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
+    // "Watch Demo" Modal
+    const demoModal = document.getElementById('demo-modal');
+    const watchDemoBtn = document.getElementById('watch-demo-btn');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    watchDemoBtn.addEventListener('click', () => demoModal.classList.remove('hidden'));
+    closeModalBtn.addEventListener('click', () => demoModal.classList.add('hidden'));
+    demoModal.addEventListener('click', (e) => {
+        if (e.target === demoModal) { // Close if clicking on the background
+            demoModal.classList.add('hidden');
+        }
+    });
+
+    // PageSpeed Analyzer
     const analyzeBtn = document.getElementById('analyze-btn');
     const urlInput = document.getElementById('url-input');
     const resultsContainer = document.getElementById('results-container');
@@ -77,30 +89,24 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please enter a valid URL.');
             return;
         }
-
         const originalText = analyzeBtn.textContent;
         analyzeBtn.innerHTML = '<span class="spinner mr-2"></span>Analyzing...';
         analyzeBtn.disabled = true;
         resultsContainer.style.display = 'none';
-        resultsContainer.innerHTML = ''; // Clear previous results
+        resultsContainer.innerHTML = '';
 
         try {
-            const response = await fetch(`${RENDER_URL}/pagespeed`, { // <-- Use the backend URL
+            const response = await fetch(`${RENDER_URL}/pagespeed`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url }),
             });
-
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to get a valid response from the server.');
+                throw new Error(errorData.error || 'Failed to get a valid response.');
             }
-
             const data = await response.json();
             displayResults(data);
-
         } catch (error) {
             console.error('Error:', error);
             alert(`An error occurred: ${error.message}`);
@@ -117,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
             { label: 'Best Practices', value: data.bestPractices, color: getScoreColor(data.bestPractices) },
             { label: 'SEO', value: data.seo, color: getScoreColor(data.seo) },
         ];
-
         scores.forEach(score => {
             const scoreCard = `
                 <div class="bg-white p-6 rounded-lg shadow-md">
@@ -127,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             resultsContainer.innerHTML += scoreCard;
         });
-
         resultsContainer.style.display = 'grid';
     }
 
