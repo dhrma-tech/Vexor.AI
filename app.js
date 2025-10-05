@@ -10,7 +10,6 @@ require(['vs/editor/editor.main'], function() {
     });
 });
 
-
 // --- Dark Mode Toggle ---
 const themeToggle = document.getElementById('theme-toggle');
 themeToggle.addEventListener('click', () => {
@@ -20,11 +19,13 @@ themeToggle.addEventListener('click', () => {
   monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs-light');
 });
 
+// --- IMPORTANT: Set your backend URL here ---
+const RENDER_URL = 'https://vexor-ai.onrender.com'; // <-- Replace with your actual Render URL
 
 // --- Generate Tests (Calls the backend) ---
 async function generateTests() {
   const code = editor.getValue();
-  const personality = 'engineer'; // You can change this to get different personalities
+  const personality = 'engineer';
   const language = 'javascript';
   const btn = document.getElementById('test-free');
   const originalText = btn.textContent;
@@ -32,7 +33,7 @@ async function generateTests() {
   btn.disabled = true;
 
   try {
-    const response = await fetch('/assert', {
+    const response = await fetch(`${RENDER_URL}/assert`, { // <-- Use the backend URL
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -50,7 +51,9 @@ async function generateTests() {
     }
 
     const data = await response.json();
-    alert('Generated Tests:\n' + data.generated_tests); // Or render in a modal/editor pane
+    // For a better user experience, consider rendering this in a modal or a new editor pane
+    alert('Generated Tests:\n\n' + data.generated_tests);
+
   } catch (error) {
     console.error('Error:', error);
     alert(`An error occurred: ${error.message}`);
@@ -62,7 +65,6 @@ async function generateTests() {
 
 // --- Event Listener for Test Generation Button ---
 document.getElementById('test-free').addEventListener('click', generateTests);
-
 
 // --- PageSpeed Insights Feature ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -84,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsContainer.innerHTML = ''; // Clear previous results
 
         try {
-            const response = await fetch('/pagespeed', {
+            const response = await fetch(`${RENDER_URL}/pagespeed`, { // <-- Use the backend URL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

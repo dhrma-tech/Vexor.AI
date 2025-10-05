@@ -28,7 +28,9 @@ const PROMPT_TEMPLATES = {
 // --- Middleware ---
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+// Note: express.static is not strictly necessary on the backend if the frontend is separate
+// but it doesn't hurt to leave it.
+app.use(express.static(__dirname)); 
 
 // --- Sandbox Function ---
 async function runInSandbox(userCode, testCode) {
@@ -37,49 +39,49 @@ async function runInSandbox(userCode, testCode) {
     const testCodePath = path.join(tempDir, 'user_code.test.js');
 
     try {
-        // We need to export the function so that the test file can import it.
-        const codeToRun = `
-            ${userCode}
-            module.exports = { ${getFunctionName(userCode)} };
-        `;
-
+        const functionName = getFunctionName(userCode);
+        if (!functionName) {
+            throw new Error("Could not determine the function name to export.");
+        }
+        
+        const codeToRun = `${userCode}\nmodule.exports = { ${functionName} };`;
         await fs.promises.writeFile(userCodePath, codeToRun);
 
-        // We need to import the function in the test file.
-        const testCodeToRun = `
-            const { ${getFunctionName(userCode)} } = require('./user_code.js');
-            ${testCode}
-        `;
+        const testCodeToRun = `const { ${functionName} } = require('./user_code.js');\n${testCode}`;
         await fs.promises.writeFile(testCodePath, testCodeToRun);
 
-
         return new Promise((resolve, reject) => {
-            exec(`jest --json ${testCodePath}`, { cwd: tempDir, timeout: 15000 }, (error, stdout, stderr) => {
-                if (error) {
-                    // Jest will exit with a non-zero code if tests fail, which is not a server error.
-                    // We check for stderr to see if there was a true error.
-                    if (stderr) {
-                        reject(new Error(`Server error during test execution: ${stderr}`));
-                        return;
-                    }
+            exec(`jest --json --testPathPattern=${tempDir}`, { cwd: tempDir, timeout: 15000 }, (error, stdout, stderr) => {
+                if (stderr) {
+                    console.error(`Jest stderr: ${stderr}`);
                 }
-                resolve(stdout);
+                // Jest exits with a non-zero code for failing tests, but stdout will still have the JSON results.
+                // We resolve with stdout if it exists, otherwise we reject.
+                if (stdout) {
+                    resolve(stdout);
+                } else {
+                    reject(new Error(`Test execution failed. Error: ${error}, Stderr: ${stderr}`));
+                }
             });
         });
 
     } finally {
-        fs.promises.rm(tempDir, { recursive: true, force: true });
+        fs.promises.rm(tempDir, { recursive: true, force: true }).catch(err => console.error(`Failed to remove temp directory: ${err}`));
     }
 }
 
 // Helper function to extract function name from user's code
 function getFunctionName(code) {
-    const match = code.match(/function\s+([a-zA-Z0-9_]+)\s*\(/);
-    return match ? match[1] : '';
+    const match = code.match(/function\s+([a-zA-Z0-9_]+)\s*\(/) || code.match(/const\s+([a-zA-Z0-9_]+)\s*=\s*\(/);
+    return match ? match[1] : null;
 }
 
 
 // --- API Endpoints ---
+app.get('/', (req, res) => {
+    res.status(200).send('Vexor.AI backend is running.');
+});
+
 app.get('/health', (req, res) => res.status(200).send({ status: 'ok' }));
 
 app.post('/assert', async (req, res) => {
@@ -113,16 +115,11 @@ app.post('/assert', async (req, res) => {
         const jestOutput = await runInSandbox(code, generated_tests);
         const results = JSON.parse(jestOutput);
 
-        const passed = results.numPassedTests;
-        const failed = results.numFailedTests;
-        const total_tests = results.numTotalTests;
-        const score = total_tests > 0 ? (passed / total_tests) * 100 : 0;
-
         res.status(200).send({
-            score: Math.round(score),
-            total_tests,
-            passed,
-            failed,
+            score: Math.round(results.numPassedTests / results.numTotalTests * 100) || 0,
+            total_tests: results.numTotalTests,
+            passed: results.numPassedTests,
+            failed: results.numFailedTests,
             output: results.testResults[0]?.assertionResults.map(r => `[${r.status.toUpperCase()}] ${r.title}`).join('\n') || "No assertion results found.",
             generated_tests,
         });
@@ -152,17 +149,11 @@ app.post('/pagespeed', async (req, res) => {
         const { lighthouseResult } = response.data;
         const { categories } = lighthouseResult;
 
-        const performanceScore = categories.performance.score * 100;
-        const accessibilityScore = categories.accessibility.score * 100;
-        const bestPracticesScore = categories['best-practices'].score * 100;
-        const seoScore = categories.seo.score * 100;
-
-
         res.status(200).send({
-            performance: Math.round(performanceScore),
-            accessibility: Math.round(accessibilityScore),
-            bestPractices: Math.round(bestPracticesScore),
-            seo: Math.round(seoScore),
+            performance: Math.round((categories.performance.score || 0) * 100),
+            accessibility: Math.round((categories.accessibility.score || 0) * 100),
+            bestPractices: Math.round((categories['best-practices'].score || 0) * 100),
+            seo: Math.round((categories.seo.score || 0) * 100),
         });
 
     } catch (error) {
