@@ -10,7 +10,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
 </head>
 <body class="font-inter bg-white text-gray-900 antialiased">
-  <!-- Header: Sticky Nav -->
   <header class="sticky top-0 z-50 bg-white shadow-sm">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center py-4">
@@ -30,7 +29,6 @@
     </nav>
   </header>
 
-  <!-- Hero Section -->
   <section class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h1 class="text-4xl md:text-6xl font-bold mb-6">The simplest AI sparring partner for your code.</h1>
@@ -39,14 +37,12 @@
         <button id="test-free" class="bg-white text-blue-600 px-8 py-3 rounded-md font-semibold hover:bg-gray-100">Paste Code & Test Free</button>
         <button class="border border-white text-white px-8 py-3 rounded-md hover:bg-white hover:text-blue-600">Watch Demo</button>
       </div>
-      <!-- Code Teaser -->
       <div class="mt-12 bg-gray-800 rounded-lg p-4 max-w-2xl mx-auto">
         <div id="editor" style="height: 200px; border: 1px solid #ccc;"></div>
       </div>
     </div>
   </section>
 
-  <!-- Features Section -->
   <section id="features" class="py-20 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center mb-12">Build Reliable Code, Faster</h2>
@@ -70,7 +66,19 @@
     </div>
   </section>
 
-  <!-- Testimonials -->
+  <section id="pagespeed" class="py-20 bg-gray-100">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold mb-4">Analyze Your Website's Performance</h2>
+      <p class="text-lg text-gray-600 mb-8">Enter a URL to get a free performance, accessibility, and SEO report.</p>
+      <div class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+        <input type="url" id="url-input" placeholder="https://example.com" class="flex-grow px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button id="analyze-btn" class="bg-blue-600 text-white px-8 py-3 rounded-md font-semibold hover:bg-blue-700">Analyze</button>
+      </div>
+      <div id="results-container" class="mt-12 grid md:grid-cols-4 gap-6 text-center" style="display: none;">
+        </div>
+    </div>
+  </section>
+
   <section class="py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center mb-12">Devs Love Vexor</h2>
@@ -90,7 +98,6 @@
       </div>
     </section>
 
-  <!-- CTA Footer -->
   <footer class="bg-gray-900 text-white py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h3 class="text-2xl font-bold mb-4">Ready to Spar?</h3>

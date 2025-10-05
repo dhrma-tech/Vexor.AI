@@ -133,6 +133,45 @@ app.post('/assert', async (req, res) => {
     }
 });
 
+// --- New PageSpeed Insights Endpoint ---
+app.post('/pagespeed', async (req, res) => {
+    const { url } = req.body;
+    if (!url) {
+        return res.status(400).send({ error: 'URL is required.' });
+    }
+
+    const GOOGLE_PAGESPEED_API_KEY = process.env.GOOGLE_PAGESPEED_API_KEY;
+    if (!GOOGLE_PAGESPEED_API_KEY) {
+        return res.status(500).send({ error: 'Google PageSpeed API key is not configured on the server.' });
+    }
+
+    const API_URL = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&key=${GOOGLE_PAGESPEED_API_KEY}&strategy=desktop`;
+
+    try {
+        const response = await axios.get(API_URL);
+        const { lighthouseResult } = response.data;
+        const { categories } = lighthouseResult;
+
+        const performanceScore = categories.performance.score * 100;
+        const accessibilityScore = categories.accessibility.score * 100;
+        const bestPracticesScore = categories['best-practices'].score * 100;
+        const seoScore = categories.seo.score * 100;
+
+
+        res.status(200).send({
+            performance: Math.round(performanceScore),
+            accessibility: Math.round(accessibilityScore),
+            bestPractices: Math.round(bestPracticesScore),
+            seo: Math.round(seoScore),
+        });
+
+    } catch (error) {
+        console.error('Error fetching PageSpeed data:', error.response ? error.response.data : error.message);
+        res.status(500).send({ error: `Failed to analyze the URL: ${error.message}` });
+    }
+});
+
+
 // --- Server Listener ---
 app.listen(PORT, () => {
     console.log(`✅ VEXOR.AI server listening on port ${PORT}`);
