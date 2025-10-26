@@ -24,7 +24,7 @@ if (!apiKey) {
 } else {
     try {
         genAI = new GoogleGenerativeAI(apiKey); // Initialize without explicit API version
-        geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest"}); // Use the latest Flash model
+        geminiModel = genAI.getGenerativeModel({ model:"gemini-pro-vision"}); // Use the latest Flash model
         console.log("GoogleGenerativeAI client initialized successfully.");
     } catch (initError) {
         console.error("FATAL ERROR: Failed to initialize GoogleGenerativeAI client:", initError);
