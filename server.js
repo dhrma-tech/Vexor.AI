@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 // --- Google AI (Gemini) Configuration ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || ""); // Initialize client
-const geminiModel = genAI.getGenerativeModel({ model: "gemini-1.0-pro"}); // Use Flash model
+const geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest"}); // Use Flash model
 
 // --- Prompts for AI Personalities (Unchanged) ---
 const PROMPT_TEMPLATES = {
