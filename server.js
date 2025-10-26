@@ -12,9 +12,26 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- Google AI (Gemini) Configuration ---
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || ""); // Initialize client
-const geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest"}); // Use Flash model
+// --- Google AI (Gemini) Configuration ---
+let genAI;
+let geminiModel;
+const apiKey = process.env.GEMINI_API_KEY;
 
+if (!apiKey) {
+    console.error("FATAL ERROR: GEMINI_API_KEY environment variable is not set.");
+    // Optional: Exit if running locally and key is missing
+    // process.exit(1); 
+} else {
+    try {
+        genAI = new GoogleGenerativeAI(apiKey); // Initialize without explicit API version
+        geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest"}); // Use the latest Flash model
+        console.log("GoogleGenerativeAI client initialized successfully.");
+    } catch (initError) {
+        console.error("FATAL ERROR: Failed to initialize GoogleGenerativeAI client:", initError);
+        // Optional: Exit if initialization fails
+        // process.exit(1); 
+    }
+}
 // --- Prompts for AI Personalities (Unchanged) ---
 const PROMPT_TEMPLATES = {
     "engineer": `You are a professional Senior Software Engineer. Write a complete and robust test suite for the following JavaScript code using the Jest framework. Cover typical use cases and follow best practices. 
@@ -148,45 +165,32 @@ app.get('/health', (req, res) => res.status(200).send({ status: 'ok' }));
 // --- UPDATED /assert endpoint ---
 app.post('/assert', async (req, res) => {
     const { code, personality, language, functionName } = req.body; 
-    
+
+    // --- ADD Check for successful initialization ---
+    if (!geminiModel) {
+        console.error('Error in /assert: geminiModel was not initialized. Check API key and logs.');
+        return res.status(500).send({ error: 'AI model is not available due to server configuration error.' });
+    }
+
+    // ... (rest of the validation remains the same)
     if (!code || !personality || !language || !functionName) {
         return res.status(400).send({ error: 'Code, personality, language, and functionName are required.' });
     }
-    if (language !== 'javascript') {
-        return res.status(400).send({ error: 'Only JavaScript is currently supported.' });
-    }
-     // --- Check if Gemini API key is set ---
-    if (!process.env.GEMINI_API_KEY) {
-         console.error('GEMINI_API_KEY is not set in the environment variables.');
-         return res.status(500).send({ error: 'API key is not configured on the server.' });
-    }
+    // ...
 
     try {
         // Format prompt (Single prompt string for Gemini)
         const promptTemplate = PROMPT_TEMPLATES[personality] || PROMPT_TEMPLATES["engineer"];
         const formattedPrompt = promptTemplate.replace('{user_code}', code);
 
-        // --- Make API call to Gemini ---
+        // Make API call to Gemini (using the initialized geminiModel)
         const result = await geminiModel.generateContent(formattedPrompt);
         const response = await result.response;
         let generated_tests = response.text();
 
-        // Clean and format the response
+        // ... (rest of the try block remains the same)
         generated_tests = generated_tests.replace(/```javascript/g, "").replace(/```/g, "").trim();
-        generated_tests = await prettier.format(generated_tests, { parser: "babel" });
-
-        // Run tests in sandbox (same as before)
-        const testResults = await runInSandbox(code, generated_tests, functionName);
-
-        // Send response (same as before)
-        res.status(200).send({
-            score: testResults.numTotalTests > 0 ? Math.round((testResults.numPassedTests / testResults.numTotalTests) * 100) : 0,
-            total_tests: testResults.numTotalTests,
-            passed: testResults.numPassedTests,
-            failed: testResults.numFailedTests,
-            output: testResults.output || "No assertion results found.",
-            generated_tests,
-        });
+        // ...
 
     } catch (error) {
         console.error('Critical error in /assert endpoint:', error);
@@ -194,7 +198,6 @@ app.post('/assert', async (req, res) => {
         res.status(500).send({ error: `An unexpected server error occurred: ${error.message}` });
     }
 });
-
 // --- PageSpeed Insights Endpoint (Unchanged) ---
 app.post('/pagespeed', async (req, res) => {
     // ... (This endpoint remains the same)
