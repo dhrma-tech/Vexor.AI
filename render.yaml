@@ -3,12 +3,11 @@ services:
     name: vexor-ai
     env: node
     plan: free
-    # Specify the required Node.js version
     nodeVersion: "22" 
     buildCommand: "npm install"
     startCommand: "node server.js"
     envVars:
-      - key: CEREBRAS_API_KEY
-        sync: false # Set this in the Render dashboard
       - key: GOOGLE_PAGESPEED_API_KEY
-        sync: false # Set this in the Render dashboard
+        sync: false
+      - key: GEMINI_API_KEY    # <-- CHANGE THIS KEY
+        sync: false
