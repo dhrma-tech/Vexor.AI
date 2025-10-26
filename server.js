@@ -5,33 +5,39 @@ require('dotenv').config();
 const axios = require('axios'); // Still needed for PageSpeed
 const prettier = require('prettier');
 const ivm = require('isolated-vm');
-const { GoogleGenerativeAI } = require("@google/generative-ai"); // <-- ADD Gemini Client
+const { GoogleGenerativeAI } = require("@google/generative-ai"); // Gemini Client
 
 // --- App Initialization ---
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- Google AI (Gemini) Configuration ---
-// --- Google AI (Gemini) Configuration ---
 let genAI;
 let geminiModel;
-const apiKey = process.env.GEMINI_API_KEY;
+const apiKey = process.env.GEMINI_API_KEY; // Get key from environment
 
+// **Critical Check:** Ensure API key exists before proceeding
 if (!apiKey) {
-    console.error("FATAL ERROR: GEMINI_API_KEY environment variable is not set.");
-    // Optional: Exit if running locally and key is missing
-    // process.exit(1); 
+    console.error("FATAL ERROR: GEMINI_API_KEY environment variable is not set. Cannot initialize GoogleGenerativeAI.");
+    // Optionally, you could throw an error or exit here if running locally
+    // throw new Error("GEMINI_API_KEY is missing!");
 } else {
     try {
-        genAI = new GoogleGenerativeAI(apiKey); // Initialize without explicit API version
-        geminiModel = genAI.getGenerativeModel({ model:"gemini-pro-vision"}); // Use the latest Flash model
-        console.log("GoogleGenerativeAI client initialized successfully.");
+        console.log("Attempting to initialize GoogleGenerativeAI client...");
+        genAI = new GoogleGenerativeAI(apiKey); // Initialize with the key
+        // Let's stick with the recommended Flash model for now
+        geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        console.log("GoogleGenerativeAI client initialized successfully with model gemini-1.5-flash-latest.");
     } catch (initError) {
         console.error("FATAL ERROR: Failed to initialize GoogleGenerativeAI client:", initError);
-        // Optional: Exit if initialization fails
-        // process.exit(1); 
+        genAI = null; // Ensure genAI and geminiModel are null if init fails
+        geminiModel = null;
+        // Optionally, you could throw an error or exit here
+        // throw new Error(`Gemini client initialization failed: ${initError.message}`);
     }
 }
+
+
 // --- Prompts for AI Personalities (Unchanged) ---
 const PROMPT_TEMPLATES = {
     "engineer": `You are a professional Senior Software Engineer. Write a complete and robust test suite for the following JavaScript code using the Jest framework. Cover typical use cases and follow best practices. 
@@ -165,49 +171,74 @@ app.get('/health', (req, res) => res.status(200).send({ status: 'ok' }));
 // --- UPDATED /assert endpoint ---
 app.post('/assert', async (req, res) => {
     const { code, personality, language, functionName } = req.body; 
-
-    // --- ADD Check for successful initialization ---
-    if (!geminiModel) {
-        console.error('Error in /assert: geminiModel was not initialized. Check API key and logs.');
-        return res.status(500).send({ error: 'AI model is not available due to server configuration error.' });
+    
+    // **Check if Gemini client initialized properly**
+    if (!genAI || !geminiModel) {
+        console.error('Error in /assert: geminiModel was not initialized. Check API key and server start logs.');
+        return res.status(500).send({ error: 'AI model is not available due to server configuration error. Check API Key.' });
     }
-
-    // ... (rest of the validation remains the same)
+    
+    // Validation
     if (!code || !personality || !language || !functionName) {
         return res.status(400).send({ error: 'Code, personality, language, and functionName are required.' });
     }
-    // ...
+    if (language !== 'javascript') {
+        return res.status(400).send({ error: 'Only JavaScript is currently supported.' });
+    }
 
     try {
-        // Format prompt (Single prompt string for Gemini)
+        // Format prompt
         const promptTemplate = PROMPT_TEMPLATES[personality] || PROMPT_TEMPLATES["engineer"];
         const formattedPrompt = promptTemplate.replace('{user_code}', code);
 
-        // Make API call to Gemini (using the initialized geminiModel)
+        // Make API call to Gemini
+        console.log(`Sending prompt to Gemini model: ${geminiModel.model}`); // Log model being used
         const result = await geminiModel.generateContent(formattedPrompt);
         const response = await result.response;
+        
+        // Check for safety ratings or blocks if needed (optional)
+        // console.log("Gemini Safety Ratings:", response.promptFeedback?.safetyRatings);
+        
         let generated_tests = response.text();
 
-        // ... (rest of the try block remains the same)
+        // Clean and format
         generated_tests = generated_tests.replace(/```javascript/g, "").replace(/```/g, "").trim();
-        // ...
+        generated_tests = await prettier.format(generated_tests, { parser: "babel" });
+
+        // Run tests
+        const testResults = await runInSandbox(code, generated_tests, functionName);
+
+        // Send response
+        res.status(200).send({
+            score: testResults.numTotalTests > 0 ? Math.round((testResults.numPassedTests / testResults.numTotalTests) * 100) : 0,
+            total_tests: testResults.numTotalTests,
+            passed: testResults.numPassedTests,
+            failed: testResults.numFailedTests,
+            output: testResults.output || "No assertion results found.",
+            generated_tests,
+        });
 
     } catch (error) {
         console.error('Critical error in /assert endpoint:', error);
-        // Specific error handling for Gemini API if needed
+        // Check if the error is from the Gemini API and has specific details
+        if (error.message && error.message.includes('GoogleGenerativeAI')) {
+             return res.status(500).send({ error: `Gemini API Error: ${error.message}` });
+        }
         res.status(500).send({ error: `An unexpected server error occurred: ${error.message}` });
     }
 });
+
 // --- PageSpeed Insights Endpoint (Unchanged) ---
 app.post('/pagespeed', async (req, res) => {
     // ... (This endpoint remains the same)
-    const { url } = req.body;
+     const { url } = req.body;
     if (!url) {
         return res.status(400).send({ error: 'URL is required.' });
     }
 
     const GOOGLE_PAGESPEED_API_KEY = process.env.GOOGLE_PAGESPEED_API_KEY;
     if (!GOOGLE_PAGESPEED_API_KEY) {
+         console.error('Error in /pagespeed: GOOGLE_PAGESPEED_API_KEY is not set.');
         return res.status(500).send({ error: 'Google PageSpeed API key is not configured on the server.' });
     }
 
@@ -225,6 +256,8 @@ app.post('/pagespeed', async (req, res) => {
                 seo: Math.round((categories.seo?.score || 0) * 100),
             });
         } else {
+             // Log the actual error from Google PageSpeed if available
+             console.error('PageSpeed API Error Response:', response.data.error);
             const errorMessage = response.data.error?.message || "The URL could not be audited by Google PageSpeed.";
             return res.status(400).send({ error: errorMessage });
         }
