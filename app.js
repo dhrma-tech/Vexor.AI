@@ -19,24 +19,34 @@ themeToggle.addEventListener('click', () => {
   monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs-light');
 });
 
-// --- IMPORTANT: Set your backend URL here ---
-const RENDER_URL = 'https://vexor-ai.onrender.com'; // <-- Replace with your actual Render URL
+// --- REMOVED Hardcoded URL ---
+// const RENDER_URL = 'https://vexor-ai.onrender.com'; // <-- This is no longer needed
 
 // --- Generate Tests (Calls the backend) ---
 async function generateTests() {
   const code = editor.getValue();
+  const functionName = document.getElementById('function-name-input').value.trim(); // <-- GET FUNCTION NAME
   const personality = 'engineer';
   const language = 'javascript';
   const btn = document.getElementById('test-free');
+  
+  // <-- ADDED VALIDATION -->
+  if (!functionName) {
+    alert('Please enter the name of the function you want to test.');
+    return;
+  }
+
   const originalText = btn.textContent;
   btn.innerHTML = '<span class="spinner mr-2"></span>Generating...';
   btn.disabled = true;
 
   try {
-    const response = await fetch(`${RENDER_URL}/assert`, {
+    // <-- USE RELATIVE URL -->
+    const response = await fetch(`/assert`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, personality, language }),
+      // <-- ADD functionName to body -->
+      body: JSON.stringify({ code, personality, language, functionName }),
     });
     if (!response.ok) {
       const errorData = await response.json();
@@ -96,7 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsContainer.innerHTML = '';
 
         try {
-            const response = await fetch(`${RENDER_URL}/pagespeed`, {
+            // <-- USE RELATIVE URL -->
+            const response = await fetch(`/pagespeed`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url }),
