@@ -43,3 +43,8 @@ Thumbs.db
 coverage/
 .nyc_output/
 .env
+node_modules/
+
+*.log
+.DS_Store
+coverage/
