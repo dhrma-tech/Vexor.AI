@@ -1,6 +1,6 @@
 // --- IMPORTANT: Set your backend URL here ---
 // ⬇️ ⬇️ ⬇️ PASTE YOUR RENDER URL HERE ⬇️ ⬇️ ⬇️
-const RENDER_URL = 'http://localhost:3000'; // <-- Make sure this is your Render URL or localhost
+const RENDER_URL = 'https://vexor-ai.onrender.com'; // <-- Make sure this is your Render URL or localhost
 // ⬆️ ⬆️ ⬆️ PASTE YOUR RENDER URL HERE ⬆️ ⬆️ ⬆️
 
 
