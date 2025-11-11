@@ -1,6 +1,6 @@
 // --- IMPORTANT: Set your backend URL here ---
 // ⬇️ ⬇️ ⬇️ PASTE YOUR RENDER URL HERE ⬇️ ⬇️ ⬇️
-const RENDER_URL = 'https://vexor-ai.onrender.com'; // <-- REPLACE THIS
+const RENDER_URL = 'http://localhost:3000'; // <-- Make sure this is your Render URL or localhost
 // ⬆️ ⬆️ ⬆️ PASTE YOUR RENDER URL HERE ⬆️ ⬆️ ⬆️
 
 
@@ -50,7 +50,7 @@ async function handleCodeAction(mode) {
   const language = 'javascript';
   
   // UI Elements
-  
+  // const loadingOverlay = document.getElementById('loading-overlay'); // <-- FIX: REMOVED
   const resultsPanel = document.getElementById('results-panel');
   const testBtn = document.getElementById('test-btn');
   const refactorBtn = document.getElementById('refactor-btn');
@@ -62,7 +62,7 @@ async function handleCodeAction(mode) {
   }
 
   // Reset UI
-  
+  // loadingOverlay.classList.remove('hidden'); // <-- FIX: REMOVED
   resultsPanel.textContent = '';
   testEditor.setValue('');
   [testBtn, refactorBtn, explainBtn].forEach(btn => btn.disabled = true);
@@ -119,7 +119,7 @@ async function handleCodeAction(mode) {
     console.error('Error:', error);
     resultsPanel.innerHTML = `<h3 class="text-xl font-bold text-red-400 mb-2">An Error Occurred</h3><pre>${error.message}</pre>`;
   } finally {
-    loadingOverlay.classList.add('hidden');
+    // loadingOverlay.classList.add('hidden'); // <-- FIX: REMOVED
     [testBtn, refactorBtn, explainBtn].forEach(btn => btn.disabled = false);
   }
 }
@@ -138,17 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // "Watch Demo" Modal
-    const demoModal = document.getElementById('demo-modal');
-    const watchDemoBtn = document.getElementById('watch-demo-btn');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    watchDemoBtn.addEventListener('click', () => demoModal.classList.remove('hidden'));
-    closeModalBtn.addEventListener('click', () => demoModal.classList.add('hidden'));
-    demoModal.addEventListener('click', (e) => {
-        if (e.target === demoModal) { // Close if clicking on the background
-            demoModal.classList.add('hidden');
-        }
-    });
+    // --- FIX: REMOVED "Watch Demo" Modal ---
+    // const demoModal = document.getElementById('demo-modal');
+    // const watchDemoBtn = document.getElementById('watch-demo-btn');
+    // const closeModalBtn = document.getElementById('close-modal-btn');
+    // watchDemoBtn.addEventListener('click', () => demoModal.classList.remove('hidden'));
+    // closeModalBtn.addEventListener('click', () => demoModal.classList.add('hidden'));
+    // demoModal.addEventListener('click', (e) => {
+    //     if (e.target === demoModal) { // Close if clicking on the background
+    //         demoModal.classList.add('hidden');
+    //     }
+    // });
 
     // PageSpeed Analyzer (This logic remains unchanged)
     const analyzeBtn = document.getElementById('analyze-btn');
