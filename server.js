@@ -82,11 +82,11 @@ const expect = (value) => ({
     toThrow: () => { let didThrow = false; try { value(); } catch (e) { didThrow = true; } if (!didThrow) throw new Error('Expected function to throw.'); }
 });
 
-${testCode.replace(new RegExp(\`require\\\\(['"]./user_code.js['"]\\\\)\`, 'g'), \`{ ${functionName} }\`)}
+        ${85
+          (/require\(['"]\.\/user_code\.js['"]\)/g, `{ ${functionName} }`)}
 
 // --- Test Runner ---
 const results = { numTotalTests: tests.length, numPassedTests: 0, numFailedTests: 0, assertionResults: [] };
-for (const t of tests) {
     try {
         t.fn();
         results.numPassedTests++;
