@@ -50,7 +50,7 @@ async function handleCodeAction(mode) {
   const language = 'javascript';
   
   // UI Elements
-  const loadingOverlay = document.getElementById('loading-overlay');
+  
   const resultsPanel = document.getElementById('results-panel');
   const testBtn = document.getElementById('test-btn');
   const refactorBtn = document.getElementById('refactor-btn');
@@ -62,7 +62,7 @@ async function handleCodeAction(mode) {
   }
 
   // Reset UI
-  loadingOverlay.classList.remove('hidden');
+  
   resultsPanel.textContent = '';
   testEditor.setValue('');
   [testBtn, refactorBtn, explainBtn].forEach(btn => btn.disabled = true);
