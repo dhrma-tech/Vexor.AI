@@ -9,5 +9,5 @@ services:
     envVars:
       - key: GOOGLE_PAGESPEED_API_KEY
         sync: false
-      - key: GEMINI_API_KEY    # <-- CHANGE THIS KEY
+      - key: GROQ_API_KEY    # <-- CHANGE THIS KEY
         sync: false
