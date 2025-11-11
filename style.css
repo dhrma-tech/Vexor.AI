@@ -22,3 +22,52 @@
   top: 0;
   left: 0;
 }
+
+/* --- NEW: Added Styles for Rebuild --- */
+
+/* Loading Overlay */
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(5px);
+}
+
+/* Spinner (from original file) */
+.spinner {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+/* Results Panel */
+#results-panel {
+  background-color: #1e293b; /* Dark background */
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre-wrap; /* Allows text to wrap */
+  word-wrap: break-word; /* Breaks long words */
+  min-height: 150px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+#results-panel pre {
+    white-space: pre-wrap; /* Ensures pre content wraps */
+    word-wrap: break-word;
+}
