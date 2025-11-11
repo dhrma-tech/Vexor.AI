@@ -1,6 +1,5 @@
 // --- IMPORTANT: Set your backend URL here ---
-const RENDER_URL = 'http://localhost:3000'; // <-- Make sure this is your Render URL or localhost
-
+const RENDER_URL = 'https://vexor-ai.onrender.com'; // Backend API URL
 // --- Monaco Editor Setup ---
 let editor;
 let testEditor;
