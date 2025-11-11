@@ -22,7 +22,7 @@ if (!apiKey) {
     try {
         console.log("Attempting to initialize GoogleGenerativeAI client...");
         genAI = new GoogleGenerativeAI(apiKey);
-        geminiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        geminiModel = genAI.getGenerativeModel({ model: "gemini-1..5-flash" });
         console.log("GoogleGenerativeAI client initialized successfully with model gemini-1.5-flash-latest.");
     } catch (initError) {
         console.error("FATAL ERROR: Failed to initialize GoogleGenerativeAI client:", initError);
