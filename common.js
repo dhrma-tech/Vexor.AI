@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const startButton = e.target.closest('.start-free-btn');
         if (startButton) {
             e.preventDefault();
-            // All "Start Free" buttons now go to the app
+            // All "Start Free" buttons (in header or footer) now go to the app
             window.location.hash = '#/app';
         }
     });
@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.addEventListener('click', (e) => {
             if (e.target.id === 'watch-demo-btn') {
                 demoModal.classList.remove('hidden');
+                demoModal.classList.add('flex'); // Make it visible and centered
             }
         });
 
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (closeModalBtn) {
             closeModalBtn.addEventListener('click', () => {
                 demoModal.classList.add('hidden');
+                demoModal.classList.remove('flex');
             });
         }
 
@@ -50,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         demoModal.addEventListener('click', (e) => {
             if (e.target === demoModal) { // Close if clicking on the background
                 demoModal.classList.add('hidden');
+                demoModal.classList.remove('flex');
             }
         });
     }
