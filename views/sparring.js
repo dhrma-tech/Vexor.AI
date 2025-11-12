@@ -70,7 +70,7 @@ const SparringView = {
     after_render: async () => {
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
         require(['vs/editor/editor.main'], function() {
-            // Hard-coded to dark theme
+            // Hardcode to dark theme
             const theme = 'vs-dark';
 
             const exampleCode = `function example(a, b) {\n  return a + b;\n}`;
@@ -82,7 +82,7 @@ const SparringView = {
                 theme: theme,
                 automaticLayout: true,
                 minimap: { enabled: false },
-                background: 'transparent'
+                background: 'transparent' // Make editor bg transparent
             });
 
             testEditor = monaco.editor.create(document.getElementById('test-editor'), {
@@ -92,7 +92,7 @@ const SparringView = {
                 automaticLayout: true,
                 readOnly: true,
                 minimap: { enabled: false },
-                background: 'transparent'
+                background: 'transparent' // Make editor bg transparent
             });
 
             typeEffect(editor, exampleCode, 75);
@@ -106,8 +106,8 @@ const SparringView = {
                     functionNameInput.placeholder = "Function name auto-detected!";
                 }
             });
-            
-            // Theme toggle logic removed
+
+            // Theme toggle logic REMOVED
         });
         
         // Simplified Event Listener for Action Tabs
