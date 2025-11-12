@@ -134,3 +134,23 @@ html:not(.dark) header #theme-toggle {
 .action-tab:not(.active-tab) {
     @apply bg-gray-700 hover:bg-gray-600;
 }
+/* --- ADD THIS TO THE END OF style.css --- */
+
+/* Styles for the new action tabs in Sparring view */
+.action-tab {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Style for the active tab */
+.action-tab.active-tab {
+    background-color: #2563eb; /* Tailwind blue-600 */
+}
+
+/* Style for inactive tabs */
+.action-tab:not(.active-tab) {
+    background-color: #374151; /* Tailwind gray-700 */
+}
+
+.action-tab:not(.active-tab):hover {
+    background-color: #4b5563; /* Tailwind gray-600 */
+}
