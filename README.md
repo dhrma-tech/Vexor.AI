@@ -19,7 +19,7 @@ Writing thorough unit tests is essential for robust software, but it's often ted
 * **Secure Code Execution**: User code and generated tests are run in a secure, isolated sandbox environment using `isolated-vm`.
 * **Website Performance Analyzer**: Get a quick overview of any website's performance, accessibility, best practices, and SEO scores using the Google PageSpeed Insights API.
 * **Interactive Code Editor**: Uses the Monaco Editor (the engine behind VS Code) for a familiar coding experience.
-* **Dark Mode**: Toggle between light and dark themes.
+* **Cyber-Space Dark Theme**: A permanent, futuristic dark mode.
 
 ---
 
