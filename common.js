@@ -14,17 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- "Start Free" Buttons ---
-    // This will now work globally, even when the view changes
     document.body.addEventListener('click', (e) => {
         if (e.target.classList.contains('start-free-btn')) {
             e.preventDefault();
-            // If we are on the main page, just scroll (or handle as needed)
-            if (window.location.pathname === '/') {
+            // If we are on the main page, just scroll
+            if (window.location.hash === '#/') {
                  document.getElementById('editor-container')?.scrollIntoView({ behavior: 'smooth' });
             } else {
-                // If on another page, navigate to the main page using the router
-                history.pushState(null, null, '/');
-                window.dispatchEvent(new PopStateEvent('popstate')); // Triggers the router
+                // If on another page, navigate to the main page hash
+                window.location.hash = '#/';
+                // The router will automatically pick up the change
             }
         }
     });
@@ -34,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalBtn = document.getElementById('close-modal-btn');
     
     if (demoModal && closeModalBtn) {
-        // We use event delegation on the body in case watch-demo-btn is loaded by the router
         document.body.addEventListener('click', (e) => {
             if (e.target.id === 'watch-demo-btn') {
                 demoModal.classList.remove('hidden');
