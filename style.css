@@ -442,3 +442,28 @@ input[type="url"], input[type="text"], select {
 .fake-code-editor .token-function { color: #dcdcaa; }
 .fake-code-editor .token-string { color: #ce9178; }
 .fake-code-editor .token-number { color: #b5cea8; }
+/* --- Add to the end of your style.css --- */
+
+/* VEXOR Chatbot Styles */
+#vexor-chat-popup {
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* Classes to toggle visibility */
+#vexor-chat-popup.chat-visible {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#vexor-chat-popup.chat-hidden {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  display: flex; /* Keep as flex for animation, but hide */
+}
+
+/* Hide the hidden class completely after animation */
+#vexor-chat-popup.hidden {
+  display: none;
+}
