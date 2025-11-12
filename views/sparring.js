@@ -1,10 +1,8 @@
 import { RENDER_URL, getScoreColor } from '../utils.js';
 
-// This view holds the logic for the Monaco editors
 let editor;
 let testEditor;
 
-// Helper for "auto-typing" text
 function typeEffect(element, text, speed = 50) {
     let i = 0;
     element.setValue('');
@@ -26,38 +24,44 @@ const SparringView = {
             <h1>The AI Sparring Partner for Your Code</h1>
             <p class="text-xl mt-4 mb-8 max-w-3xl mx-auto">Paste your functions, get instant tests, refactor suggestions, or explanations. No setup, instant value.</p>
             
+            <!-- Inputs now use global styles -->
             <div class="max-w-xl mx-auto mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label for="function-name-input" class="block text-sm font-medium text-gray-400 mb-1 text-left">Function Name</label>
-                    <input type="text" id="function-name-input" placeholder="Function name auto-detected..." class="w-full px-4 py-3 border rounded-md text-white focus:outline-none focus:ring-2" required>
+                    <input type="text" id="function-name-input" placeholder="Function name auto-detected..." class="w-full px-4 py-3" required>
                 </div>
                 <div>
                     <label for="personality-select" class="block text-sm font-medium text-gray-400 mb-1 text-left">Test Personality</label>
-                    <select id="personality-select" class="w-full px-4 py-3 border rounded-md text-white focus:outline-none focus:ring-2">
+                    <select id="personality-select" class="w-full px-4 py-3">
                         <option value="engineer">Senior Engineer</option>
                         <option value="drill_sergeant">QA Drill Sergeant</option>
                     </select>
                 </div>
             </div>
 
-            <div id="action-tabs" class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <!-- Action Tabs: Updated to new pill style -->
+            <div id="action-tabs" class="flex flex-row gap-4 justify-center mb-12">
               <button data-mode="assert" class="action-tab active-tab flex-1 px-8 py-3">Generate Tests</button>
               <button data-mode="refactor" class="action-tab flex-1 px-8 py-3">Refactor Code</button>
               <button data-mode="explain" class="action-tab flex-1 px-8 py-3">Explain Code</button>
             </div>
 
+            <!-- Editor Layout: Wrappers now have .glowing-card -->
             <div id="editor-layout" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-              <div id="editor-wrapper">
+              
+              <div id="editor-wrapper" class="glowing-card p-4">
                 <label class="block text-lg font-medium mb-2">Your Code</label>
                 <div id="editor" style="height: 300px;"></div>
               </div>
-              <div id="test-editor-wrapper">
+              
+              <div id="test-editor-wrapper" class="glowing-card p-4">
                 <label class="block text-lg font-medium mb-2">AI Generated Output</label>
                 <div id="test-editor" style="height: 300px;"></div>
               </div>
-              <div id="results-wrapper" class="md:col-span-2">
+              
+              <div id="results-wrapper" class="md:col-span-2 glowing-card p-4">
                 <label class="block text-lg font-medium mb-2">Results</label>
-                <div id="results-panel">
+                <div id="results-panel" class="bg-transparent p-0">
                   Click a button above to get started...
                 </div>
               </div>
@@ -67,21 +71,21 @@ const SparringView = {
         `;
     },
     after_render: async () => {
-        // All the JS from main-app.js goes here
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
         require(['vs/editor/editor.main'], function() {
-            const isDark = document.documentElement.classList.contains('dark');
-            const theme = isDark ? 'vs-dark' : 'vs-light';
+            const isDark = true; // Hardcode to dark theme for this aesthetic
+            const theme = 'vs-dark';
 
             const exampleCode = `function example(a, b) {\n  return a + b;\n}`;
             const exampleTests = `// AI-generated tests will appear here...`;
 
             editor = monaco.editor.create(document.getElementById('editor'), {
-                value: '', // Start empty for typing effect
+                value: '',
                 language: 'javascript',
                 theme: theme,
                 automaticLayout: true,
-                minimap: { enabled: false }
+                minimap: { enabled: false },
+                background: 'transparent' // Make editor bg transparent
             });
 
             testEditor = monaco.editor.create(document.getElementById('test-editor'), {
@@ -90,13 +94,12 @@ const SparringView = {
                 theme: theme,
                 automaticLayout: true,
                 readOnly: true,
-                minimap: { enabled: false }
+                minimap: { enabled: false },
+                background: 'transparent' // Make editor bg transparent
             });
 
-            // "Fascinating" Feature: Auto-typing intro
             typeEffect(editor, exampleCode, 75);
 
-            // "Fascinating" Feature: Smart function detection
             const functionNameInput = document.getElementById('function-name-input');
             editor.onDidChangeModelContent(() => {
                 const code = editor.getValue();
@@ -107,57 +110,47 @@ const SparringView = {
                 }
             });
 
-            // Update theme if dark mode is toggled
+            // Theme toggle logic (though we're hardcoding dark)
             const themeToggle = document.getElementById('theme-toggle');
             if (themeToggle) {
                 themeToggle.addEventListener('click', () => {
+                    // This will just toggle light/dark mode for text/card colors
+                    document.documentElement.classList.toggle('dark');
                     const isDark = document.documentElement.classList.contains('dark');
-                    const newTheme = isDark ? 'vs-dark' : 'vs-light';
-                    monaco.editor.setTheme(newTheme);
+                    monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs-light');
                 });
             }
         });
         
-        // --- NEW Event Listener for Action Tabs ---
+        // Simplified Event Listener for Action Tabs
         const actionTabs = document.getElementById('action-tabs');
-        
         actionTabs.addEventListener('click', (e) => {
             const tab = e.target.closest('.action-tab');
             if (!tab || tab.disabled) return;
 
             const mode = tab.dataset.mode;
 
-            // Set active tab style
+            // Simple class toggle
             actionTabs.querySelectorAll('.action-tab').forEach(t => {
                 t.classList.remove('active-tab');
             });
             tab.classList.add('active-tab');
 
-            // Adjust layout based on mode *before* calling
             adjustLayoutForMode(mode);
-            
-            // Call the action
             handleCodeAction(mode);
         });
 
-        // Set initial layout
         adjustLayoutForMode('assert');
     },
     unmount: () => {
-        // Destroy Monaco instances to prevent memory leaks
-        if (editor) {
-            editor.dispose();
-            editor = null;
-        }
-        if (testEditor) {
-            testEditor.dispose();
-            testEditor = null;
-        }
-        console.log("Sparring view unmounted");
+        if (editor) editor.dispose();
+        if (testEditor) testEditor.dispose();
+        editor = null;
+        testEditor = null;
     }
 };
 
-// --- NEW: Layout Adjustment Function ---
+// Layout Adjustment Function (Unchanged)
 function adjustLayoutForMode(mode) {
     const editorLayout = document.getElementById('editor-layout');
     const testEditorWrapper = document.getElementById('test-editor-wrapper');
@@ -166,9 +159,9 @@ function adjustLayoutForMode(mode) {
     if (mode === 'explain') {
         testEditorWrapper.style.display = 'none';
         resultsWrapper.classList.remove('md:col-span-2');
-        resultsWrapper.classList.add('md:col-span-2'); // Keep it full width
+        resultsWrapper.classList.add('md:col-span-2');
         editorLayout.classList.remove('md:grid-cols-2');
-        editorLayout.classList.add('md:grid-cols-1'); // Stack editor and results
+        editorLayout.classList.add('md:grid-cols-1');
     } else {
         testEditorWrapper.style.display = 'block';
         resultsWrapper.classList.add('md:col-span-2');
@@ -177,13 +170,13 @@ function adjustLayoutForMode(mode) {
     }
 }
 
-// --- Main API Call Function (from main-app.js) ---
+// API Call Function (Unchanged)
 async function handleCodeAction(mode) {
-    if (!editor) return; // Guard against uninitialized editor
+    if (!editor) return;
 
     const code = editor.getValue();
     const functionName = document.getElementById('function-name-input').value.trim();
-    const personality = document.getElementById('personality-select').value; // Get personality
+    const personality = document.getElementById('personality-select').value;
     const language = 'javascript';
     
     const resultsPanel = document.getElementById('results-panel');
@@ -194,7 +187,6 @@ async function handleCodeAction(mode) {
         return;
     }
 
-    // Reset UI
     resultsPanel.innerHTML = '<div class="spinner"></div><p>Vexor is thinking...</p>';
     if (mode !== 'explain') {
         testEditor.setValue('');
@@ -206,7 +198,7 @@ async function handleCodeAction(mode) {
     
     if (mode === 'assert') {
         endpoint = `${RENDER_URL}/assert`;
-        body = { code, personality: personality, language, functionName }; // Use selected personality
+        body = { code, personality, language, functionName };
     } else {
         endpoint = `${RENDER_URL}/analyze`;
         body = { code, mode }; 
@@ -226,7 +218,6 @@ async function handleCodeAction(mode) {
         
         const data = await response.json();
 
-        // Handle response based on mode
         if (mode === 'assert') {
             testEditor.setValue(data.generated_tests);
             const scoreColor = getScoreColor(data.score);
@@ -244,7 +235,6 @@ async function handleCodeAction(mode) {
             testEditor.setValue(data.content);
             resultsPanel.innerHTML = `<h3 class="text-xl font-bold mb-2">Refactor Analysis</h3><pre>${data.analysis || 'Code refactored.'}</pre>`;
         } else if (mode === 'explain') {
-            // We don't touch testEditor, just the results panel
             resultsPanel.innerHTML = `<h3 class="text-xl font-bold mb-2">Code Explanation</h3><pre>${data.content}</pre>`;
         }
 
