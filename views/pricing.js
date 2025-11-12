@@ -6,6 +6,7 @@ const PricingView = {
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 class="text-3xl font-bold text-center mb-12">Devs Love Vexor</h2>
               <div class="grid md:grid-cols-3 gap-8">
+                <!-- This class is now styled as a "glowing-card" by style.css -->
                 <blockquote class="premium-card p-6">
                   <p class="text-slate-300 mb-4">"Caught 15 edge cases I missed—game-changer for my side project."</p>
                   <cite class="font-semibold text-white not-italic">– Asmit, Indie Dev</cite>
