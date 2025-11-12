@@ -9,14 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
           themeToggle.textContent = isDark ? '☀️' : '🌙';
           
           // Check if Monaco is loaded before trying to set its theme
-          if (typeof monaco !== 'undefined') {
+          if (typeof monaco !== 'undefined' && monaco.editor) {
             monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs-light');
           }
         });
     }
 
     // --- "Start Free" Buttons ---
-    // Uses event delegation to work across all views (home, footer, etc.)
     document.body.addEventListener('click', (e) => {
         const startButton = e.target.closest('.start-free-btn');
         if (startButton) {
@@ -31,17 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalBtn = document.getElementById('close-modal-btn');
     
     if (demoModal && closeModalBtn) {
-        // Use event delegation for the open button, as it lives in a view
         document.body.addEventListener('click', (e) => {
             if (e.target.id === 'watch-demo-btn') {
                 demoModal.classList.remove('hidden');
             }
         });
 
-        // Close button
         closeModalBtn.addEventListener('click', () => demoModal.classList.add('hidden'));
         
-        // Background click to close
         demoModal.addEventListener('click', (e) => {
             if (e.target === demoModal) {
                 demoModal.classList.add('hidden');
@@ -55,16 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatClose = document.getElementById('vexor-chat-close');
     const messageArea = document.getElementById('vexor-message-area');
     const chatInput = document.getElementById('vexor-chat-input');
-    const chatSend = document.getElementById('vexor-chat-send');
+    const chatSend = document.getElementById('vexor-chat-send'); // This line was failing
 
+    // This check is crucial. If chatSend is null, this block is skipped.
     if (chatPopup && chatToggle && chatClose && messageArea && chatInput && chatSend) {
         
-        // Start as fully hidden
         chatPopup.classList.add('chat-hidden');
         
         const openChat = () => {
             chatPopup.classList.remove('hidden');
-            setTimeout(() => { // Delay to allow 'display' to apply
+            setTimeout(() => {
                 chatPopup.classList.remove('chat-hidden');
                 chatPopup.classList.add('chat-visible');
             }, 10);
@@ -74,13 +70,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const closeChat = () => {
             chatPopup.classList.remove('chat-visible');
             chatPopup.classList.add('chat-hidden');
-            setTimeout(() => { // Wait for animation to finish
+            setTimeout(() => {
                 chatPopup.classList.add('hidden');
             }, 300);
             chatToggle.classList.remove('hidden');
         };
 
-        // --- Chat Message Handling ---
         const addMessage = (sender, text) => {
             const messageWrapper = document.createElement('div');
             const messageBubble = document.createElement('div');
@@ -96,8 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
             messageBubble.textContent = text;
             messageWrapper.appendChild(messageBubble);
             messageArea.appendChild(messageWrapper);
-            
-            // Scroll to bottom
             messageArea.scrollTop = messageArea.scrollHeight;
         };
 
@@ -107,15 +100,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 addMessage('user', text);
                 chatInput.value = '';
                 
-                // --- This is where you would call the Groq API ---
-                // For now, here's a dummy response
                 setTimeout(() => {
                     addMessage('vexor', "I'm not fully connected yet, but I'm ready to help once my developer wires me up to the Groq API!");
                 }, 1000);
             }
         };
 
-        // --- Event Listeners ---
         chatToggle.addEventListener('click', openChat);
         chatClose.addEventListener('click', closeChat);
         chatSend.addEventListener('click', handleSend);
@@ -124,6 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 handleSend();
             }
         });
+    } else {
+        console.error("VEXOR Chatbot UI elements not found. Make sure all IDs are correct in index.html.");
     }
 
 });
