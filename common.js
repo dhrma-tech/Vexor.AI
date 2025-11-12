@@ -1,123 +1,129 @@
 document.addEventListener('DOMContentLoaded', () => {
+
     // --- Dark Mode Toggle ---
-    // REMOVED
-    
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          document.documentElement.classList.toggle('dark');
+          const isDark = document.documentElement.classList.contains('dark');
+          themeToggle.textContent = isDark ? '☀️' : '🌙';
+          
+          // Check if Monaco is loaded before trying to set its theme
+          if (typeof monaco !== 'undefined') {
+            monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs-light');
+          }
+        });
+    }
+
     // --- "Start Free" Buttons ---
+    // Uses event delegation to work across all views (home, footer, etc.)
     document.body.addEventListener('click', (e) => {
-        // Find the closest 'start-free-btn'
         const startButton = e.target.closest('.start-free-btn');
         if (startButton) {
             e.preventDefault();
-            // All "Start Free" buttons (in header or footer) now go to the app
-            window.location.hash = '#/app';
+            // All "Start Free" buttons should navigate to the sparring app
+            window.location.hash = '#/sparring';
         }
     });
 
     // --- Demo Modal ---
     const demoModal = document.getElementById('demo-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
     
-    // Check for modal existence
-    if (demoModal) {
-        const closeModalBtn = document.getElementById('close-modal-btn');
-
-        // Open Modal
+    if (demoModal && closeModalBtn) {
+        // Use event delegation for the open button, as it lives in a view
         document.body.addEventListener('click', (e) => {
             if (e.target.id === 'watch-demo-btn') {
                 demoModal.classList.remove('hidden');
-                demoModal.classList.add('flex'); // Make it visible and centered
             }
         });
 
-        // Close Modal (Button)
-        if (closeModalBtn) {
-            closeModalBtn.addEventListener('click', () => {
-                demoModal.classList.add('hidden');
-                demoModal.classList.remove('flex');
-            });
-        }
-
-        // Close Modal (Background Click)
+        // Close button
+        closeModalBtn.addEventListener('click', () => demoModal.classList.add('hidden'));
+        
+        // Background click to close
         demoModal.addEventListener('click', (e) => {
-            if (e.target === demoModal) { // Close if clicking on the background
+            if (e.target === demoModal) {
                 demoModal.classList.add('hidden');
-                demoModal.classList.remove('flex');
             }
         });
     }
 
-    // --- NEW: Vexor Chat Widget Logic ---
+    // --- VEXOR Chatbot Toggle ---
+    const chatPopup = document.getElementById('vexor-chat-popup');
     const chatToggle = document.getElementById('vexor-chat-toggle');
-    const chatWidget = document.getElementById('vexor-chat-widget');
+    const chatClose = document.getElementById('vexor-chat-close');
+    const messageArea = document.getElementById('vexor-message-area');
     const chatInput = document.getElementById('vexor-chat-input');
-    const chatHistory = document.getElementById('vexor-chat-history');
+    const chatSend = document.getElementById('vexor-chat-send');
 
-    if (chatToggle && chatWidget) {
-        // Toggle the chat window
-        chatToggle.addEventListener('click', () => {
-            chatWidget.classList.toggle('hidden');
-            chatToggle.textContent = chatWidget.classList.contains('hidden') ? '?' : '×';
-        });
-    }
+    if (chatPopup && chatToggle && chatClose && messageArea && chatInput && chatSend) {
+        
+        // Start as fully hidden
+        chatPopup.classList.add('chat-hidden');
+        
+        const openChat = () => {
+            chatPopup.classList.remove('hidden');
+            setTimeout(() => { // Delay to allow 'display' to apply
+                chatPopup.classList.remove('chat-hidden');
+                chatPopup.classList.add('chat-visible');
+            }, 10);
+            chatToggle.classList.add('hidden');
+        };
 
-    if (chatInput && chatHistory) {
-        // Send message on Enter
-        chatInput.addEventListener('keypress', async (e) => {
-            if (e.key === 'Enter' && chatInput.value.trim() !== '') {
-                const userMessage = chatInput.value.trim();
-                chatInput.value = ''; // Clear input
+        const closeChat = () => {
+            chatPopup.classList.remove('chat-visible');
+            chatPopup.classList.add('chat-hidden');
+            setTimeout(() => { // Wait for animation to finish
+                chatPopup.classList.add('hidden');
+            }, 300);
+            chatToggle.classList.remove('hidden');
+        };
 
-                // 1. Add user message to UI
-                addChatMessage('user', userMessage);
+        // --- Chat Message Handling ---
+        const addMessage = (sender, text) => {
+            const messageWrapper = document.createElement('div');
+            const messageBubble = document.createElement('div');
+            
+            if (sender === 'user') {
+                messageWrapper.className = 'flex justify-end';
+                messageBubble.className = 'bg-blue-600 text-white p-3 rounded-lg max-w-xs';
+            } else { // 'vexor'
+                messageWrapper.className = 'flex';
+                messageBubble.className = 'bg-gray-700 text-white p-3 rounded-lg max-w-xs';
+            }
+            
+            messageBubble.textContent = text;
+            messageWrapper.appendChild(messageBubble);
+            messageArea.appendChild(messageWrapper);
+            
+            // Scroll to bottom
+            messageArea.scrollTop = messageArea.scrollHeight;
+        };
 
-                // 2. Call your backend
-                // Using the RENDER_URL from your utils.js file
-                const RENDER_URL = 'https://vexor-ai.onrender.com'; 
+        const handleSend = () => {
+            const text = chatInput.value.trim();
+            if (text) {
+                addMessage('user', text);
+                chatInput.value = '';
+                
+                // --- This is where you would call the Groq API ---
+                // For now, here's a dummy response
+                setTimeout(() => {
+                    addMessage('vexor', "I'm not fully connected yet, but I'm ready to help once my developer wires me up to the Groq API!");
+                }, 1000);
+            }
+        };
 
-                try {
-                    const response = await fetch(`${RENDER_URL}/chat`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: userMessage })
-                    });
-
-                    if (!response.ok) {
-                         const errorData = await response.json();
-                         throw new Error(errorData.error || 'Network response was not ok');
-                    }
-                    
-                    const data = await response.json();
-                    
-                    // 3. Add AI reply to UI
-                    addChatMessage('assistant', data.reply);
-
-                } catch (error) {
-                    console.error('Chat Error:', error);
-                    addChatMessage('assistant', `Sorry, I ran into an error: ${error.message}`);
-                }
+        // --- Event Listeners ---
+        chatToggle.addEventListener('click', openChat);
+        chatClose.addEventListener('click', closeChat);
+        chatSend.addEventListener('click', handleSend);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSend();
             }
         });
     }
 
-    function addChatMessage(role, message) {
-        const msgEl = document.createElement('div');
-        msgEl.classList.add('mb-3', 'text-sm');
-        
-        // Basic sanitation to prevent HTML injection
-        const safeMessage = message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-        if (role === 'user') {
-            msgEl.classList.add('text-right');
-            msgEl.innerHTML = `<span class="inline-block p-2 bg-violet-700 text-white rounded-lg max-w-xs text-left">${safeMessage}</span>`;
-        } else {
-            msgEl.classList.add('text-left');
-            // This is basic, for a real app you'd want a markdown parser
-            const formattedMessage = safeMessage.replace(/\n/g, '<br>');
-            msgEl.innerHTML = `<span class="inline-block p-2 bg-slate-800 text-slate-300 rounded-lg max-w-xs">${formattedMessage}</span>`;
-        }
-        
-        chatHistory.appendChild(msgEl);
-        chatHistory.scrollTop = chatHistory.scrollHeight; // Auto-scroll to bottom
-    }
-    // --- END Vexor Chat Widget Logic ---
-    
 });
