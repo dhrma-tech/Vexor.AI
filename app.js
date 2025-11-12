@@ -7,9 +7,8 @@ import PricingView from './views/pricing.js';
 
 // This simple router maps URL hashes to view objects
 const routes = {
-    '/': HomeView,             // <-- Default route is now HomeView
+    '/': HomeView,             // <-- Default route is HomeView
     '/app': SparringView,      // <-- Sparring is now at #/app
-    '/sparring': SparringView, // <-- Alias for "Sparring" nav link
     '/analyzer': AnalyzerView,
     '/pricing': PricingView,
 };
@@ -18,7 +17,9 @@ let currentView = null;
 
 const router = async () => {
     const path = window.location.hash.slice(1) || '/';
-    const view = routes[path] || routes['/']; 
+    // Use '/app' as the route for the old '/sparring'
+    const resolvedPath = (path === '/sparring') ? '/app' : path;
+    const view = routes[resolvedPath] || routes['/']; 
 
     if (currentView && typeof currentView.unmount === 'function') {
         currentView.unmount();
