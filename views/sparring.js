@@ -2,13 +2,6 @@ import { RENDER_URL, getScoreColor } from '../utils.js';
 
 let editor;
 let testEditor;
-let currentLanguage = 'javascript'; // Keep track of the current language
-
-// NEW: Example code snippets for different languages
-const exampleSnippets = {
-    javascript: `function example(a, b) {\n  return a + b;\n}`,
-    python: `def example(a, b):\n  return a + b\n`
-};
 
 function typeEffect(element, text, speed = 50) {
     let i = 0;
@@ -31,19 +24,12 @@ const SparringView = {
             <h1>The AI Sparring Partner for Your Code</h1>
             <p class="text-xl mt-4 mb-8 max-w-3xl mx-auto">Paste your functions, get instant tests, refactor suggestions, or explanations. No setup, instant value.</p>
             
-            <div class="max-w-xl mx-auto mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="md:col-span-1">
-                    <label for="language-select" class="block text-sm font-medium text-gray-400 mb-1 text-left">Language</label>
-                    <select id="language-select" class="w-full px-4 py-3">
-                        <option value="javascript" selected>JavaScript</option>
-                        <option value="python">Python</option>
-                    </select>
-                </div>
-                <div class="md:col-span-1">
+            <div class="max-w-xl mx-auto mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
                     <label for="function-name-input" class="block text-sm font-medium text-gray-400 mb-1 text-left">Function Name</label>
-                    <input type="text" id="function-name-input" placeholder="Function name (if JS)" class="w-full px-4 py-3">
+                    <input type="text" id="function-name-input" placeholder="Function name auto-detected..." class="w-full px-4 py-3" required>
                 </div>
-                <div class="md:col-span-1">
+                <div>
                     <label for="personality-select" class="block text-sm font-medium text-gray-400 mb-1 text-left">Test Personality</label>
                     <select id="personality-select" class="w-full px-4 py-3">
                         <option value="engineer">Senior Engineer</option>
@@ -61,12 +47,12 @@ const SparringView = {
             <div id="editor-layout" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
               
               <div id="editor-wrapper" class="glowing-card p-4">
-                <label class="block text-lg font-medium mb-2">Your Code (<span id="editor-lang-label">JavaScript</span>)</label>
+                <label class="block text-lg font-medium mb-2">Your Code</label>
                 <div id="editor" style="height: 300px;"></div>
               </div>
               
               <div id="test-editor-wrapper" class="glowing-card p-4">
-                <label class="block text-lg font-medium mb-2">AI Generated Output (<span id="test-editor-lang-label">JavaScript</span>)</label>
+                <label class="block text-lg font-medium mb-2">AI Generated Output</label>
                 <div id="test-editor" style="height: 300px;"></div>
               </div>
               
@@ -82,14 +68,13 @@ const SparringView = {
         `;
     },
     after_render: async () => {
-        const functionNameInput = document.getElementById('function-name-input');
-        const languageSelect = document.getElementById('language-select');
-        const editorLangLabel = document.getElementById('editor-lang-label');
-        const testEditorLangLabel = document.getElementById('test-editor-lang-label');
-
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
         require(['vs/editor/editor.main'], function() {
-            const theme = 'vs-dark'; // Hardcoded dark theme
+            // Hardcode to dark theme
+            const theme = 'vs-dark';
+
+            const exampleCode = `function example(a, b) {\n  return a + b;\n}`;
+            const exampleTests = `// AI-generated tests will appear here...`;
 
             editor = monaco.editor.create(document.getElementById('editor'), {
                 value: '',
@@ -97,61 +82,28 @@ const SparringView = {
                 theme: theme,
                 automaticLayout: true,
                 minimap: { enabled: false },
-                background: 'transparent'
+                background: 'transparent' // Make editor bg transparent
             });
 
             testEditor = monaco.editor.create(document.getElementById('test-editor'), {
-                value: '// AI-generated tests will appear here...',
+                value: exampleTests,
                 language: 'javascript',
                 theme: theme,
                 automaticLayout: true,
                 readOnly: true,
                 minimap: { enabled: false },
-                background: 'transparent'
+                background: 'transparent' // Make editor bg transparent
             });
 
-            // Initial code type effect
-            typeEffect(editor, exampleSnippets.javascript, 75);
+            typeEffect(editor, exampleCode, 75);
 
-            // Auto-detect function name for JS
+            const functionNameInput = document.getElementById('function-name-input');
             editor.onDidChangeModelContent(() => {
-                if (currentLanguage === 'javascript') {
-                    const code = editor.getValue();
-                    const match = code.match(/function\s+([a-zA-Z0-9_]+)\s*\(/);
-                    if (match && match[1]) {
-                        functionNameInput.value = match[1];
-                        functionNameInput.placeholder = "Function name auto-detected!";
-                    }
-                }
-            });
-
-            // NEW: Language change handler
-            languageSelect.addEventListener('change', (e) => {
-                currentLanguage = e.target.value;
-                const newLangLabel = currentLanguage.charAt(0).toUpperCase() + currentLanguage.slice(1);
-                
-                // Update editor language models
-                monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
-                monaco.editor.setModelLanguage(testEditor.getModel(), currentLanguage);
-                
-                // Update labels
-                editorLangLabel.textContent = newLangLabel;
-                testEditorLangLabel.textContent = newLangLabel;
-
-                // Set new example code and reset test editor
-                if (editor.getValue() !== exampleSnippets[currentLanguage]) {
-                    editor.setValue(exampleSnippets[currentLanguage] || `// ${currentLanguage} code goes here`);
-                }
-                testEditor.setValue(`// AI-generated ${currentLanguage} tests will appear here...`);
-                
-                // Toggle function name input
-                if (currentLanguage === 'python') {
-                    functionNameInput.value = '';
-                    functionNameInput.placeholder = 'N/A for Python tests';
-                    functionNameInput.disabled = true;
-                } else {
-                    functionNameInput.placeholder = 'Function name auto-detected...';
-                    functionNameInput.disabled = false;
+                const code = editor.getValue();
+                const match = code.match(/function\s+([a-zA-Z0-9_]+)\s*\(/);
+                if (match && match[1]) {
+                    functionNameInput.value = match[1];
+                    functionNameInput.placeholder = "Function name auto-detected!";
                 }
             });
         });
@@ -160,9 +112,14 @@ const SparringView = {
         actionTabs.addEventListener('click', (e) => {
             const tab = e.target.closest('.action-tab');
             if (!tab || tab.disabled) return;
+
             const mode = tab.dataset.mode;
-            actionTabs.querySelectorAll('.action-tab').forEach(t => t.classList.remove('active-tab'));
+
+            actionTabs.querySelectorAll('.action-tab').forEach(t => {
+                t.classList.remove('active-tab');
+            });
             tab.classList.add('active-tab');
+
             adjustLayoutForMode(mode);
             handleCodeAction(mode);
         });
@@ -177,11 +134,12 @@ const SparringView = {
     }
 };
 
-// (This function remains the same)
+// Layout Adjustment Function
 function adjustLayoutForMode(mode) {
     const editorLayout = document.getElementById('editor-layout');
     const testEditorWrapper = document.getElementById('test-editor-wrapper');
     const resultsWrapper = document.getElementById('results-wrapper');
+
     if (mode === 'explain') {
         testEditorWrapper.style.display = 'none';
         resultsWrapper.classList.remove('md:col-span-2');
@@ -196,20 +154,19 @@ function adjustLayoutForMode(mode) {
     }
 }
 
-// API Call Function - MODIFIED
+// API Call Function
 async function handleCodeAction(mode) {
     if (!editor) return;
 
     const code = editor.getValue();
     const functionName = document.getElementById('function-name-input').value.trim();
     const personality = document.getElementById('personality-select').value;
-    const language = document.getElementById('language-select').value; // NEW: Get selected language
+    const language = 'javascript';
     
     const resultsPanel = document.getElementById('results-panel');
     const actionTabs = document.getElementById('action-tabs');
 
-    // MODIFIED: Only require functionName for JavaScript 'assert' mode
-    if (mode === 'assert' && language === 'javascript' && !functionName) {
+    if (mode === 'assert' && !functionName) {
         alert('Please enter the name of the function you want to test (or paste code to auto-detect).');
         return;
     }
@@ -225,12 +182,10 @@ async function handleCodeAction(mode) {
     
     if (mode === 'assert') {
         endpoint = `${RENDER_URL}/assert`;
-        // NEW: Send language and functionName (even if empty for Python)
         body = { code, personality, language, functionName };
     } else {
         endpoint = `${RENDER_URL}/analyze`;
-        // NEW: Send language
-        body = { code, mode, language }; 
+        body = { code, mode }; 
     }
 
     try {
@@ -247,8 +202,6 @@ async function handleCodeAction(mode) {
         
         const data = await response.json();
 
-        // This part remains largely the same, but the 'data' object
-        // will now contain language-specific results from the new service.
         if (mode === 'assert') {
             testEditor.setValue(data.generated_tests);
             const scoreColor = getScoreColor(data.score);
