@@ -16,34 +16,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- "Start Free" Buttons ---
     document.body.addEventListener('click', (e) => {
-        // Find the closest 'start-free-btn' or 'data-link' to the clicked element
+        // Find the closest 'start-free-btn'
         const startButton = e.target.closest('.start-free-btn');
         if (startButton) {
             e.preventDefault();
-            
-            // Check if it's also a data-link (like in the header)
-            if (startButton.matches('[data-link]')) {
-                // If it is, let the main router handle it
-                window.location.hash = startButton.getAttribute('href');
-            } else {
-                // If it's just a button (like in the footer), go to the app
-                window.location.hash = '#/app';
-            }
+            // All "Start Free" buttons now go to the app
+            window.location.hash = '#/app';
         }
     });
 
     // --- Demo Modal ---
     const demoModal = document.getElementById('demo-modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
     
-    if (demoModal && closeModalBtn) {
+    // Check for modal existence
+    if (demoModal) {
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        // Open Modal
         document.body.addEventListener('click', (e) => {
             if (e.target.id === 'watch-demo-btn') {
                 demoModal.classList.remove('hidden');
             }
         });
 
-        closeModalBtn.addEventListener('click', () => demoModal.classList.add('hidden'));
+        // Close Modal (Button)
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => {
+                demoModal.classList.add('hidden');
+            });
+        }
+
+        // Close Modal (Background Click)
         demoModal.addEventListener('click', (e) => {
             if (e.target === demoModal) { // Close if clicking on the background
                 demoModal.classList.add('hidden');
