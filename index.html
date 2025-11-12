@@ -52,20 +52,56 @@
 </body>
 </html>
 <header class="sticky top-0 z-50 bg-white/10 backdrop-blur-md shadow-sm">
-    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-4">
-        <div class="flex items-center">
-          <a href="#/" data-link class="text-xl font-bold text-white">Vexor.AI</a>
-        </div>
-        <div class="hidden md:flex space-x-8">
-          <a href="#/sparring" data-link class="text-gray-300 hover:text-white">Sparring</a>
-          <a href="#/analyzer" data-link class="text-gray-300 hover:text-white">Analyzer</a>
-          <a href="#/pricing" data-link class="text-gray-300 hover:text-white">Pricing</a>
-        </div>
-        <div class="flex items-center space-x-4">
-          <button id="theme-toggle" class="p-2 text-gray-300 hover:text-white">🌙</button>
-          <a href="#/app" data-link class="start-free-btn bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Start Free</a>
-        </div>
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center py-4">
+      <div class="flex items-center">
+        <a href="#/" data-link class="text-xl font-bold text-white">Vexor.AI</a>
       </div>
-    </nav>
-  </header>
+      <div class="hidden md:flex space-x-8">
+        <a href="#/app" data-link class="text-gray-300 hover:text-white">Sparring</a>
+        <a href="#/analyzer" data-link class="text-gray-300 hover:text-white">Analyzer</a>
+        <a href="#/pricing" data-link class="text-gray-300 hover:text-white">Testimonials</a>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button id="theme-toggle" class="p-2 text-gray-300 hover:text-white">🌙</button>
+        <a href="#/app" data-link class="start-free-btn bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+          Start Free
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main id="app-root">
+  </main>
+
+<footer class="bg-gray-900 text-white py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h3 class="text-2xl font-bold mb-4">Ready to Spar?</h3>
+    <p class="mb-6">Get 100 free test generations on signup.</p>
+    <button class="start-free-btn bg-blue-600 text-white px-8 py-3 rounded-md font-semibold hover:bg-blue-700">
+      Start Free
+    </button>
+    <div class="mt-8 text-sm text-gray-400">
+      <p>&copy; 2025 Vexor.AI. All rights reserved. @dhrma-tech | <a href="#" class="hover:underline">Privacy</a> | <a href="#" class="hover:underline">Terms</a></p>
+    </div>
+  </div>
+</footer>
+
+<div id="demo-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center hidden">
+  <div class="bg-gray-800 w-11/12 md:w-3/4 lg:w-1/2 max-w-4xl rounded-lg shadow-2xl relative">
+    <button id="close-modal-btn" class="absolute -top-3 -right-3 bg-red-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold">&times;</button>
+    <div class="aspect-w-16 aspect-h-9">
+      <iframe 
+        src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen
+        class="rounded-t-lg">
+      </iframe>
+    </div>
+    <div class="p-4 text-center">
+      <p class="text-lg text-gray-300">See Vexor.AI in action!</p>
+    </div>
+  </div>
+</div>
