@@ -43,7 +43,47 @@
       </div>
     </div>
   </footer>
+<div id="vexor-chat-widget" class="fixed bottom-8 right-8 z-50">
+    
+    <div id="vexor-chat-popup" class="hidden w-80 sm:w-96 h-[60vh] bg-gray-800/80 backdrop-blur-md rounded-xl shadow-2xl flex flex-col transition-all duration-300 transform translate-y-4 opacity-0">
+      
+      <div class="flex justify-between items-center p-4 bg-gray-900/50 rounded-t-xl">
+        <h3 class="text-lg font-semibold text-white">VEXOR</h3>
+        <button id="vexor-chat-close" class="text-gray-400 hover:text-white">&times;</button>
+      </div>
+      
+      <div class="flex-1 p-4 space-y-4 overflow-y-auto">
+        <div class="flex">
+          <div class="bg-gray-700 text-white p-3 rounded-lg max-w-xs">
+            <p>Hi, I'm VEXOR. Ask me to analyze a code snippet, explain a concept, or help you use the site.</p>
+          </div>
+        </div>
+        
+        <div class="flex justify-end">
+          <div class="bg-blue-600 text-white p-3 rounded-lg max-w-xs">
+            <p>How do I test an async function?</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="p-4 bg-gray-900/50 rounded-b-xl">
+        <div class="flex space-x-2">
+          <input type="text" id="vexor-chat-input" placeholder="Ask VEXOR..." class="flex-1 px-4 py-2 border border-gray-600 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <button class="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
 
+    <button id="vexor-chat-toggle" class="bg-blue-600 text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 5V3m0 18v-2M12 17a5 5 0 100-10 5 5 0 000 10zM12 14a2 2 0 100-4 2 2 0 000 4z" />
+      </svg>
+    </button>
+  </div>
   <div id="demo-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center">
     <div class="bg-slate-950/80 backdrop-blur-lg border border-violet-500/10 shadow-glow-violet w-11/12 md:w-3/4 lg:w-1/2 max-w-4xl rounded-lg shadow-2xl relative">
       <button id="close-modal-btn" class="absolute -top-3 -right-3 bg-red-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold z-10">&times;</button>
