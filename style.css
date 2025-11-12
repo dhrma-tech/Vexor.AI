@@ -123,3 +123,14 @@ html:not(.dark) header #theme-toggle {
     opacity: 1;
     transform: translateY(0);
 }
+/* Add to style.css */
+.action-tab {
+    transition: all 0.2s ease-in-out;
+}
+.action-tab.active-tab {
+    /* Use a brighter color to show it's active */
+    @apply bg-blue-600;
+}
+.action-tab:not(.active-tab) {
+    @apply bg-gray-700 hover:bg-gray-600;
+}
