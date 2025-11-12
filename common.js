@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- Dark Mode Toggle ---
     // REMOVED
-
+    
     // --- "Start Free" Buttons ---
     document.body.addEventListener('click', (e) => {
         // Find the closest 'start-free-btn'
