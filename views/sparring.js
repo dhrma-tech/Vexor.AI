@@ -20,21 +20,20 @@ function typeEffect(element, text, speed = 50) {
 
 const SparringView = {
     render: async () => {
-        // This is the HTML content from the old index.html <section>
         return `
-        <section class="bg-transparent py-20 text-white">
+        <section class="bg-transparent py-20">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 class="text-4xl md:text-6xl font-bold mb-6">The AI Sparring Partner for Your Code</h1>
-            <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">Paste your functions, get instant tests, refactor suggestions, or explanations. No setup, instant value.</p>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">Paste your functions, get instant tests, refactor suggestions, or explanations. No setup, instant value.</p>
             
             <div class="max-w-xl mx-auto mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label for="function-name-input" class="block text-sm font-medium text-gray-400 mb-1 text-left">Function Name</label>
-                    <input type="text" id="function-name-input" placeholder="Function name auto-detected..." class="w-full px-4 py-3 border border-gray-600 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <input type="text" id="function-name-input" placeholder="Function name auto-detected..." class="w-full px-4 py-3 border border-gray-600 rounded-md bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 </div>
                 <div>
                     <label for="personality-select" class="block text-sm font-medium text-gray-400 mb-1 text-left">Test Personality</label>
-                    <select id="personality-select" class="w-full px-4 py-3 border border-gray-600 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="personality-select" class="w-full px-4 py-3 border border-gray-600 rounded-md bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="engineer">Senior Engineer</option>
                         <option value="drill_sergeant">QA Drill Sergeant</option>
                     </select>
@@ -42,23 +41,23 @@ const SparringView = {
             </div>
 
             <div id="action-tabs" class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <button data-mode="assert" class="action-tab active-tab flex-1 text-white px-8 py-3 rounded-md font-semibold disabled:opacity-50">Generate Tests</button>
-              <button data-mode="refactor" class="action-tab flex-1 text-white px-8 py-3 rounded-md font-semibold disabled:opacity-50">Refactor Code</button>
-              <button data-mode="explain" class="action-tab flex-1 text-white px-8 py-3 rounded-md font-semibold disabled:opacity-50">Explain Code</button>
+              <button data-mode="assert" class="action-tab active-tab flex-1 px-8 py-3">Generate Tests</button>
+              <button data-mode="refactor" class="action-tab flex-1 px-8 py-3">Refactor Code</button>
+              <button data-mode="explain" class="action-tab flex-1 px-8 py-3">Explain Code</button>
             </div>
 
             <div id="editor-layout" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
               <div id="editor-wrapper">
                 <label class="block text-lg font-medium mb-2">Your Code</label>
-                <div id="editor" style="height: 300px; border: 1px solid #334155;" class="rounded-lg"></div>
+                <div id="editor" style="height: 300px;"></div>
               </div>
               <div id="test-editor-wrapper">
                 <label class="block text-lg font-medium mb-2">AI Generated Output</label>
-                <div id="test-editor" style="height: 300px; border: 1px solid #334155;" class="rounded-lg"></div>
+                <div id="test-editor" style="height: 300px;"></div>
               </div>
               <div id="results-wrapper" class="md:col-span-2">
                 <label class="block text-lg font-medium mb-2">Results</label>
-                <div id="results-panel" class="bg-gray-800 text-white p-4 rounded-lg font-mono text-sm" style="min-height: 100px;">
+                <div id="results-panel">
                   Click a button above to get started...
                 </div>
               </div>
