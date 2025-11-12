@@ -36,6 +36,11 @@ require(['vs/editor/editor.main'], function() {
             monaco.editor.setTheme(newTheme);
         });
      }
+    
+  // --- Event Listeners for buttons ---
+  document.getElementById('test-btn').addEventListener('click', () => handleCodeAction('assert'));
+  document.getElementById('refactor-btn').addEventListener('click', () => handleCodeAction('refactor'));
+  document.getElementById('explain-btn').addEventListener('click', () => handleCodeAction('explain'));
 });
 
 // --- Main API Call Function ---
@@ -113,13 +118,6 @@ async function handleCodeAction(mode) {
     [testBtn, refactorBtn, explainBtn].forEach(btn => btn.disabled = false);
   }
 }
-
-// --- Event Listeners for this page ---
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('test-btn').addEventListener('click', () => handleCodeAction('assert'));
-    document.getElementById('refactor-btn').addEventListener('click', () => handleCodeAction('refactor'));
-    document.getElementById('explain-btn').addEventListener('click', () => handleCodeAction('explain'));
-});
 
 // --- Utility Functions ---
 function getScoreColor(score) {
