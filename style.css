@@ -30,7 +30,7 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    @apply font-bold; /* Poppins is already bold, but this ensures it */
+    @apply font-bold;
   }
 
   h1 {
@@ -44,7 +44,7 @@
   }
   
   p, blockquote {
-    @apply text-lg text-slate-200; /* Brighter text for paragraphs */
+    @apply text-lg text-slate-200;
   }
 
   a {
@@ -62,7 +62,6 @@
   ==========================================================================
 */
 header {
-  /* Invisible header, as requested */
   @apply sticky top-0 z-50 bg-transparent;
 }
 
@@ -84,7 +83,6 @@ header nav a.text-xl {
   ==========================================================================
 */
 
-/* Main CTA Button: White, pill-shaped, black text */
 .start-free-btn {
   @apply bg-white text-black rounded-full font-bold;
   @apply transition-transform duration-200 ease-in-out;
@@ -93,7 +91,6 @@ header nav a.text-xl {
   @apply transform scale-[1.03];
 }
 
-/* Secondary Button: White outline, pill-shaped */
 .secondary-btn {
   @apply bg-transparent text-white rounded-full font-bold border-2 border-white;
   @apply transition-all duration-200 ease-in-out;
@@ -102,18 +99,15 @@ header nav a.text-xl {
   @apply transform scale-[1.03] bg-white/5;
 }
 
-/* Sparring Tabs */
 .action-tab {
   @apply font-semibold rounded-full transition-all duration-200 ease-in-out;
   @apply disabled:opacity-50;
 }
 
-/* Active Tab: Matches .start-free-btn */
 .action-tab.active-tab {
   @apply bg-white text-black transform scale-[1.03];
 }
 
-/* Inactive Tab: White text, glows violet on hover */
 .action-tab:not(.active-tab) {
   @apply bg-transparent text-white;
 }
@@ -124,7 +118,7 @@ header nav a.text-xl {
 
 /*
   ==========================================================================
-  5. CARDS & PANELS (NEW GLOWING BOX STYLE)
+  5. CARDS & PANELS (GLOWING BOX STYLE)
   ==========================================================================
 */
 .glowing-card {
@@ -134,7 +128,6 @@ header nav a.text-xl {
   @apply rounded-lg backdrop-blur-lg;
 }
 
-/* Legacy .premium-card gets mapped to the new style */
 .premium-card {
   @apply glowing-card;
 }
@@ -149,7 +142,6 @@ input[type="url"], input[type="text"], select {
   @apply focus:ring-[var(--neon-violet)] focus:border-[var(--neon-violet)];
 }
 
-/* Make panels and editors use the new glowing card style */
 #results-panel {
   @apply glowing-card;
   color: #e2e8f0;
@@ -162,14 +154,12 @@ input[type="url"], input[type="text"], select {
   overflow-y: auto;
 }
 
-/* Apply card style to the *wrappers* */
 #editor-wrapper.glowing-card,
 #test-editor-wrapper.glowing-card,
 #results-wrapper.glowing-card {
-  @apply p-4; /* Add padding to the wrapper */
+  @apply p-4;
 }
 
-/* The editors themselves are transparent inside the card */
 #editor, #test-editor, #test-editor-preview {
   @apply rounded-lg;
 }
@@ -184,18 +174,21 @@ input[type="url"], input[type="text"], select {
   7. HERO & ANIMATIONS
   ==========================================================================
 */
-/* The subtle grid pattern for the hero */
-.hero-grid::after {
+.bg-grid {
+  position: relative;
+}
+/* Reusable grid pattern */
+.bg-grid::after {
   content: '';
   position: absolute;
   inset: 0;
   background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 2.5rem 2.5rem; /* Larger grid */
+  background-size: 2.5rem 2.5rem;
   opacity: 0.5;
   z-index: 0;
 }
 /* Ensure content is above the grid */
-.hero-grid > * {
+.bg-grid > * {
   position: relative;
   z-index: 1;
 }
@@ -236,7 +229,6 @@ input[type="url"], input[type="text"], select {
   animation: fade-in-delay-2 1s ease-out 1.2s forwards;
 }
 
-/* Light streak reveal animation */
 .h1-reveal-light {
   position: absolute;
   inset: 0;
@@ -246,7 +238,6 @@ input[type="url"], input[type="text"], select {
   animation: reveal-light 1.5s ease-in-out 0.8s forwards;
 }
 
-/* Arc SVG animation */
 .hero-arc-svg {
   animation: arc-draw 2s ease-out 0.2s forwards;
   stroke-dasharray: 1000;
@@ -268,7 +259,7 @@ input[type="url"], input[type="text"], select {
 
 /*
   ==========================================================================
-  8. DIGITAL GLOBE (New Component for Home)
+  8. NEW GRAPHICS (Phone, Globe, Eclipse)
   ==========================================================================
 */
 .stats-container {
@@ -280,99 +271,5 @@ input[type="url"], input[type="text"], select {
   border-radius: 50%;
   position: relative;
   overflow: hidden;
-  /* Glowing blue/purple globe */
   background: radial-gradient(circle at 30% 30%, #fff, #a78bfa 40%, #5b21b6 100%);
-  box-shadow: 0 0 20px #a78bfa, 0 0 40px #a78bfa, inset 0 0 10px #fff;
-}
-/* Grid lines for the globe */
-.digital-globe::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.2) 1px, transparent 1px), 
-    linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px);
-  background-size: 1.5rem 1.5rem;
-  opacity: 0.5;
-  animation: globe-scroll 5s linear infinite;
-}
-@keyframes globe-scroll {
-  from { background-position: 0 0; }
-  to { background-position: -3rem 0; }
-}
-.stats-text {
-  @apply text-center;
-}
-.stats-number {
-  @apply text-5xl font-bold text-white;
-}
-.stats-label {
-  @apply text-slate-300 mt-2;
-}
-
-/*
-  ==========================================================================
-  9. MISC & LEGACY
-  ==========================================================================
-*/
-/* Spinner (unchanged) */
-.spinner {
-  display: inline-block;
-  width: 1.5rem;
-  height: 1.5rem;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: #fff;
-  animation: spin 1s ease-in-out infinite;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Light mode (Simplified) */
-html:not(.dark) body {
-    background: #f3f4f6;
-    color: #111827;
-}
-html:not(.dark) h1, html:not(.dark) h2, html:not(.dark) h3 {
-    color: #111827;
-}
-html:not(.dark) p, html:not(.dark) blockquote {
-    color: #4b5563;
-}
-html:not(.dark) header {
-    background-color: #ffffff/80;
-    @apply border-b border-slate-200/50;
-}
-html:not(.dark) header nav a {
-    color: #374151;
-}
-html:not(.dark) header nav a:hover {
-    color: var(--neon-violet);
-}
-html:not(.dark) .start-free-btn {
-    @apply bg-black text-white;
-}
-html:not(.dark) .secondary-btn {
-    @apply bg-transparent text-black border-black;
-}
-html:not(.dark) .action-tab:not(.active-tab) {
-    @apply text-black;
-}
-html:not(.dark) .action-tab.active-tab {
-    @apply bg-black text-white;
-}
-html:not(.dark) .glowing-card {
-    background-color: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(157, 0, 255, 0.2);
-    box-shadow: 0 0 25px -5px rgba(157, 0, 255, 0.1);
-}
-html:not(.dark) #results-panel {
-    @apply text-black;
-}
-html:not(.dark) .stats-number {
-  @apply text-black;
-}
-html:not(.dark) .stats-label {
-  @apply text-slate-600;
-}
+  box-shadow: 0 0
