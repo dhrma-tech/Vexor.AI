@@ -246,7 +246,40 @@ app.post('/pagespeed', async (req, res) => {
         res.status(500).send({ error: `Failed to analyze the URL: ${error.message}` });
     }
 });
+// ... after your /pagespeed endpoint ...
 
+app.post('/chat', async (req, res) => {
+    const { message } = req.body;
+    
+    if (!groqClient) {
+        console.error('Error in /chat: groqClient was not initialized.');
+        return res.status(500).send({ error: 'AI model is not available.' });
+    }
+    if (!message) {
+        return res.status(400).send({ error: 'Message is required.' });
+    }
+
+    // A simple prompt to define the assistant's role
+    const prompt = `You are Vexor.AI, a helpful and witty coding assistant. A user has asked the following question. Keep your answer concise and helpful.
+    User: "${message}"
+    Vexor.AI:`;
+
+    try {
+        const chatCompletion = await groqClient.chat.completions.create({
+            messages: [{ role: 'user', content: prompt }],
+            model: 'llama-3.3-70b-versatile', // Using your existing model
+            temperature: 0.7,
+            max_tokens: 1024
+        });
+
+        const reply = chatCompletion.choices[0]?.message?.content || 'Sorry, I\'m not sure how to respond to that.';
+        res.status(200).send({ reply: reply });
+
+    } catch (error) {
+        console.error('Critical error in /chat endpoint:', error);
+        res.status(500).send({ error: `An unexpected server error occurred: ${error.message}` });
+    }
+});
 // --- Server Listener ---
 const server = app.listen(PORT, () => {
     console.log(`✅ VEXOR.AI server listening on port ${PORT}`);
