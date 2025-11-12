@@ -161,6 +161,11 @@ const HomeView = {
 
         const hiddenElements = document.querySelectorAll('.hidden-anim');
         hiddenElements.forEach(el => observer.observe(el));
+
+        // --- MONACO EDITOR PREVIEW REMOVED ---
+        // The broken code that tried to load
+        // monaco.editor.create(document.getElementById('test-editor-preview'), ...)
+        // has been completely removed.
     },
     unmount: () => {
         console.log("Home view unmounted");
