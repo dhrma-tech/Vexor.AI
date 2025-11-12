@@ -2,14 +2,13 @@ import { RENDER_URL, getScoreColor } from '../utils.js';
 
 const AnalyzerView = {
     render: async () => {
-        // This is the HTML content from the old analyzer.html <section>
         return `
-        <section id="pagespeed" class="py-20 bg-transparent text-white">
+        <section id="pagespeed" class="py-20 bg-transparent">
           <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold mb-4">Analyze Your Website's Performance</h2>
-            <p class="text-lg text-slate-300 mb-8">Enter a URL to get a free performance, accessibility, and SEO report.</p>
+            <h2>Analyze Your Website's Performance</h2>
+            <p class="text-lg text-slate-300 mt-4 mb-8">Enter a URL to get a free performance, accessibility, and SEO report.</p>
             <div class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
-              <input type="url" id="url-input" placeholder="https://example.com" class="flex-grow px-4 py-3 border border-gray-600 rounded-md bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <input type="url" id="url-input" placeholder="https://example.com" class="flex-grow px-4 py-3 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2">
               <button id="analyze-btn" class="start-free-btn px-8 py-3 disabled:opacity-50">Analyze</button>
             </div>
             <div id="results-container" class="mt-12 grid md:grid-cols-4 gap-6 text-center" style="display: none;"></div>
@@ -18,7 +17,6 @@ const AnalyzerView = {
         `;
     },
     after_render: async () => {
-        // All the JS from analyzer-app.js goes here
         const analyzeBtn = document.getElementById('analyze-btn');
         const urlInput = document.getElementById('url-input');
         const resultsContainer = document.getElementById('results-container');
@@ -65,7 +63,7 @@ const AnalyzerView = {
                 { label: 'SEO', value: data.seo, color: getScoreColor(data.seo) },
             ];
             scores.forEach(score => {
-                // Using the new 'premium-card' class
+                // premium-card class is already applied here, perfect!
                 const scoreCard = `
                     <div class="premium-card p-6">
                         <div class="text-5xl font-bold" style="color: ${score.color};">${score.value}</div>
@@ -78,7 +76,6 @@ const AnalyzerView = {
         }
     },
     unmount: () => {
-        // No complex cleanup needed for this view
         console.log("Analyzer view unmounted");
     }
 };
