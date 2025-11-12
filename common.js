@@ -14,25 +14,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- "Start Free" Buttons ---
-    document.querySelectorAll('.start-free-btn').forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent default link behavior
-            // If we are already on the main page, scroll. Otherwise, go to it.
-            if (window.location.pathname === '/' || window.location.pathname.endsWith('index.html')) {
-                 document.getElementById('editor-container').scrollIntoView({ behavior: 'smooth' });
+    // This will now work globally, even when the view changes
+    document.body.addEventListener('click', (e) => {
+        if (e.target.classList.contains('start-free-btn')) {
+            e.preventDefault();
+            // If we are on the main page, just scroll (or handle as needed)
+            if (window.location.pathname === '/') {
+                 document.getElementById('editor-container')?.scrollIntoView({ behavior: 'smooth' });
             } else {
-                window.location.href = 'index.html'; // Go to the main app page
+                // If on another page, navigate to the main page using the router
+                history.pushState(null, null, '/');
+                window.dispatchEvent(new PopStateEvent('popstate')); // Triggers the router
             }
-        });
+        }
     });
 
     // --- Demo Modal ---
     const demoModal = document.getElementById('demo-modal');
-    const watchDemoBtn = document.getElementById('watch-demo-btn');
     const closeModalBtn = document.getElementById('close-modal-btn');
     
-    if (demoModal && watchDemoBtn && closeModalBtn) {
-        watchDemoBtn.addEventListener('click', () => demoModal.classList.remove('hidden'));
+    if (demoModal && closeModalBtn) {
+        // We use event delegation on the body in case watch-demo-btn is loaded by the router
+        document.body.addEventListener('click', (e) => {
+            if (e.target.id === 'watch-demo-btn') {
+                demoModal.classList.remove('hidden');
+            }
+        });
+
         closeModalBtn.addEventListener('click', () => demoModal.classList.add('hidden'));
         demoModal.addEventListener('click', (e) => {
             if (e.target === demoModal) { // Close if clicking on the background
