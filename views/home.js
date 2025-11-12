@@ -1,31 +1,35 @@
-//
-// Replace your entire /views/home.js file with this
-//
 const HomeView = {
     render: async () => {
         return `
-        <section class="flex flex-col justify-center items-center text-center" style="height: 90vh;">
-            <div class="max-w-3xl mx-auto px-4">
-                <h1 class="text-4xl md:text-6xl font-bold mb-6 text-white">The AI Sparring Partner for Your Code</h1>
-                <p class="text-xl text-gray-300 mb-8">
-                    Paste your functions. Get instant tests, refactors, and explanations. No setup, instant value.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="#/app" data-link class="start-free-btn bg-blue-600 text-white px-8 py-3 rounded-md font-semibold hover:bg-blue-700">
-                        Start Sparring Now
-                    </a>
-                    <button id="watch-demo-btn" class="bg-gray-700 text-white px-8 py-3 rounded-md font-semibold hover:bg-gray-600">
-                        Watch Demo
-                    </button>
-                </div>
+        <section class="flex flex-col justify-center items-center text-center relative bg-grid" style="height: 90vh;">
+            
+            <div class="mb-4">
+                <span class="text-2xl font-bold text-white">Vexor.AI</span>
             </div>
-            <div class="mt-20 text-gray-400 animate-bounce">
+
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 text-white">
+                AI CODE SPARRING
+            </h1>
+            
+            <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                Forging robust code. Conquering edge cases.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#/sparring" data-link class="start-free-btn bg-white text-black px-8 py-3 rounded-full font-bold hover:scale-[1.03] transition-transform">
+                    Start Sparring Now
+                </a>
+                <button id="watch-demo-btn" class="secondary-btn bg-transparent text-white border-2 border-white px-8 py-3 rounded-full font-bold hover:scale-[1.03] hover:bg-white/5 transition-all">
+                    Watch Demo
+                </button>
+            </div>
+            
+            <div class="absolute bottom-10 text-gray-400 animate-bounce">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
             </div>
         </section>
-
         <section class="py-32 overflow-hidden">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
                 <div class="hidden-anim-left">
@@ -33,7 +37,7 @@ const HomeView = {
                     <p class="text-lg text-gray-300 mb-6">
                         Stop guessing. Our AI generates a comprehensive Jest test suite for your functions, finding bugs you didn't know existed.
                     </p>
-                    <a href="#/app" data-link class="text-blue-400 text-lg font-semibold hover:text-blue-300">
+                    <a href="#/sparring" data-link class="text-blue-400 text-lg font-semibold hover:text-blue-300">
                         Try the Test Generator &rarr;
                     </a>
                 </div>
@@ -133,7 +137,6 @@ const HomeView = {
         hiddenElements.forEach(el => observer.observe(el));
     },
     unmount: () => {
-        // No heavy resources to clean up anymore!
         console.log("Home view unmounted");
     }
 };
