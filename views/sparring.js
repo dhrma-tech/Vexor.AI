@@ -23,17 +23,17 @@ const SparringView = {
         return `
         <section class="bg-transparent py-20">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl md:text-6xl font-bold mb-6">The AI Sparring Partner for Your Code</h1>
-            <p class="text-xl mb-8 max-w-3xl mx-auto">Paste your functions, get instant tests, refactor suggestions, or explanations. No setup, instant value.</p>
+            <h1>The AI Sparring Partner for Your Code</h1>
+            <p class="text-xl mt-4 mb-8 max-w-3xl mx-auto">Paste your functions, get instant tests, refactor suggestions, or explanations. No setup, instant value.</p>
             
             <div class="max-w-xl mx-auto mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label for="function-name-input" class="block text-sm font-medium text-gray-400 mb-1 text-left">Function Name</label>
-                    <input type="text" id="function-name-input" placeholder="Function name auto-detected..." class="w-full px-4 py-3 border border-gray-600 rounded-md bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <input type="text" id="function-name-input" placeholder="Function name auto-detected..." class="w-full px-4 py-3 border rounded-md text-white focus:outline-none focus:ring-2" required>
                 </div>
                 <div>
                     <label for="personality-select" class="block text-sm font-medium text-gray-400 mb-1 text-left">Test Personality</label>
-                    <select id="personality-select" class="w-full px-4 py-3 border border-gray-600 rounded-md bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="personality-select" class="w-full px-4 py-3 border rounded-md text-white focus:outline-none focus:ring-2">
                         <option value="engineer">Senior Engineer</option>
                         <option value="drill_sergeant">QA Drill Sergeant</option>
                     </select>
