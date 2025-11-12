@@ -19,7 +19,7 @@ function typeEffect(element, text, speed = 50) {
 const SparringView = {
     render: async () => {
         return `
-        <section class="bg-transparent py-20">
+        <section class="bg-transparent py-20 bg-grid"> 
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1>The AI Sparring Partner for Your Code</h1>
             <p class="text-xl mt-4 mb-8 max-w-3xl mx-auto">Paste your functions, get instant tests, refactor suggestions, or explanations. No setup, instant value.</p>
@@ -106,11 +106,8 @@ const SparringView = {
                     functionNameInput.placeholder = "Function name auto-detected!";
                 }
             });
-
-            // Theme toggle logic REMOVED
         });
         
-        // Simplified Event Listener for Action Tabs
         const actionTabs = document.getElementById('action-tabs');
         actionTabs.addEventListener('click', (e) => {
             const tab = e.target.closest('.action-tab');
@@ -118,7 +115,6 @@ const SparringView = {
 
             const mode = tab.dataset.mode;
 
-            // Simple class toggle
             actionTabs.querySelectorAll('.action-tab').forEach(t => {
                 t.classList.remove('active-tab');
             });
@@ -138,7 +134,7 @@ const SparringView = {
     }
 };
 
-// Layout Adjustment Function (Unchanged)
+// Layout Adjustment Function
 function adjustLayoutForMode(mode) {
     const editorLayout = document.getElementById('editor-layout');
     const testEditorWrapper = document.getElementById('test-editor-wrapper');
@@ -158,7 +154,7 @@ function adjustLayoutForMode(mode) {
     }
 }
 
-// API Call Function (Unchanged)
+// API Call Function
 async function handleCodeAction(mode) {
     if (!editor) return;
 
