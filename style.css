@@ -1,6 +1,5 @@
 /*
   Import Tailwind's base, components, and utilities.
-  This is the modern way to set up Tailwind.
 */
 @tailwind base;
 @tailwind components;
@@ -10,23 +9,20 @@
   ==========================================================================
   1. BASE & TYPOGRAPHY
   ==========================================================================
-  Define our base styles and typography using @layer.
 */
 @layer base {
   /*
-    Apply a high-class dark background and default text color.
-    'antialiased' makes fonts look smoother.
+    New background: Pure black for maximum contrast, like the video.
   */
   body {
-    @apply bg-slate-900 text-slate-200 antialiased;
+    @apply bg-black text-slate-200 antialiased;
   }
 
   /*
-    Consistent header styles.
-    Using 'apply' here keeps all typography rules in one place.
+    Updated h1 gradient to use the new violet accent.
   */
   h1 {
-    @apply text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400;
+    @apply text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-violet-400;
   }
   h2 {
     @apply text-3xl font-bold text-white;
@@ -35,103 +31,138 @@
     @apply text-2xl font-bold text-white;
   }
   
-  /*
-    Default paragraph text is slightly lighter for better contrast.
-  */
   p, blockquote {
     @apply text-lg text-slate-300;
   }
 
   /*
-    Global link styling
+    Global link styling updated to violet.
   */
   a {
-    @apply text-blue-400 transition-colors duration-200;
+    @apply text-violet-400 transition-colors duration-200;
   }
   a:hover {
-    @apply text-blue-300 underline;
+    @apply text-violet-300 underline;
   }
 }
 
 /*
   ==========================================================================
-  2. HEADER & NAVIGATION
+  2. HERO SECTION (New Effects)
   ==========================================================================
-  A sleek, floating header with a glass-like effect.
+*/
+
+/*
+  This class creates the large, circular glow at the top
+  of the hero, similar to the arc in the video.
+*/
+.hero-glow {
+  position: relative;
+  overflow: hidden;
+}
+.hero-glow::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 700px;
+  background-image: radial-gradient(circle, rgba(139, 92, 246, 0.25), transparent 60%); /* violet-500 glow */
+  opacity: 0.7;
+  z-index: 0;
+}
+
+/*
+  This adds the subtle grid pattern seen in the video.
+*/
+.hero-grid {
+  position: relative;
+}
+.hero-grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 2rem 2rem;
+  opacity: 0.5;
+  z-index: 0;
+}
+
+/* We need to make sure the hero content sits *above* the grid/glow */
+.hero-glow > *, .hero-grid > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+/*
+  ==========================================================================
+  3. HEADER & NAVIGATION
+  ==========================================================================
 */
 header {
-  /*
-    A subtle background with backdrop-blur, plus a border to 
-    separate it from the content.
-  */
-  @apply sticky top-0 z-50 bg-slate-900/70 backdrop-blur-md border-b border-slate-700/50;
+  /* Darker, glass-like header */
+  @apply sticky top-0 z-50 bg-black/70 backdrop-blur-md border-b border-slate-700/50;
 }
 
 header nav a {
   @apply text-slate-200 font-medium no-underline transition-colors duration-200;
 }
-
 header nav a:hover {
-  @apply text-blue-400;
+  @apply text-violet-400;
 }
-
-/*
-  The main logo link
-*/
 header nav a.text-xl {
   @apply text-white font-bold no-underline;
 }
 
 /*
   ==========================================================================
-  3. BUTTONS & COMPONENTS
+  4. BUTTONS & COMPONENTS
   ==========================================================================
-  Upgraded interactive elements.
 */
 
 /*
-  The main Call-to-Action button.
-  Now has a shadow, a hover shadow "glow", and a subtle "lift" effect.
+  Updated CTA button with violet glow.
 */
 .start-free-btn {
-  @apply bg-blue-600 text-white font-semibold rounded-md shadow-lg transition-all duration-300 ease-in-out;
-  @apply hover:bg-blue-500 hover:shadow-xl hover:shadow-blue-500/30 transform hover:-translate-y-0.5;
+  @apply bg-violet-600 text-white font-semibold rounded-md shadow-lg transition-all duration-300 ease-in-out;
+  @apply hover:bg-violet-500 hover:shadow-xl hover:shadow-violet-500/30 transform hover:-translate-y-0.5;
 }
 
 /*
-  The secondary tab buttons in the Sparring view.
+  Updated Action Tabs with violet accent.
 */
 .action-tab {
   @apply font-semibold rounded-md shadow-md transition-all duration-300 ease-in-out;
   @apply disabled:opacity-50;
 }
 
-/* Active tab state */
 .action-tab.active-tab {
-  @apply bg-blue-600 text-white shadow-lg shadow-blue-500/30;
+  @apply bg-violet-600 text-white shadow-lg shadow-violet-500/30;
   @apply transform -translate-y-0.5;
 }
 
-/* Inactive tab state */
 .action-tab:not(.active-tab) {
-  @apply bg-slate-700 text-slate-200;
+  /* Darker inactive tabs */
+  @apply bg-slate-800 text-slate-200;
 }
 
 .action-tab:not(.active-tab):not(:disabled):hover {
-  @apply bg-slate-600 transform -translate-y-0.5;
+  @apply bg-slate-700 transform -translate-y-0.5;
 }
 
 /*
-  A "premium card" style for testimonials, score cards, etc.
-  Features a glass-like background, a ring border, and a subtle top glow.
+  Glassmorphism Cards:
+  More transparent, with backdrop-blur and a violet glow.
 */
 .premium-card {
-  @apply bg-slate-800/50 rounded-lg shadow-xl ring-1 ring-slate-700/50;
+  @apply bg-slate-900/40 rounded-lg shadow-xl ring-1 ring-slate-700/50;
+  @apply backdrop-blur-lg; /* The "glass" effect */
   position: relative;
-  overflow: hidden; /* Keeps the glow contained */
+  overflow: hidden;
 }
 
-/* The CSS-only top glow effect */
 .premium-card::before {
   content: '';
   position: absolute;
@@ -139,21 +170,35 @@ header nav a.text-xl {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.5), transparent); /* Blue-500 glow */
+  /* Updated glow to violet */
+  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent); /* violet-500 glow */
   opacity: 0.7;
   transition: all 0.3s;
 }
 
 .premium-card:hover::before {
   opacity: 1;
-  transform: scaleX(1.5); /* Makes the glow spread on hover */
+  transform: scaleX(1.5);
+}
+
+/*
+  ==========================================================================
+  5. FORMS, EDITORS, & PANELS
+  ==========================================================================
+*/
+
+/* Update focus ring color for inputs */
+input[type="url"], input[type="text"], select {
+  @apply bg-slate-800/70 border-slate-700;
+  @apply focus:ring-violet-500 focus:border-violet-500;
 }
 
 /*
   Editor & Results Panel Styling
 */
 #results-panel {
-  @apply bg-slate-800/50 ring-1 ring-slate-700/50; /* Match the card style */
+  /* Match the new glass-card style */
+  @apply bg-slate-900/40 ring-1 ring-slate-700/50 backdrop-blur-lg;
   color: #e2e8f0;
   border-radius: 0.5rem;
   padding: 1.5rem;
@@ -166,7 +211,7 @@ header nav a.text-xl {
 }
 
 /* Add a subtle ring to the editors */
-#editor, #test-editor {
+#editor, #test-editor, #test-editor-preview {
   @apply rounded-lg ring-1 ring-slate-700/50;
 }
 
@@ -177,36 +222,19 @@ header nav a.text-xl {
 
 /*
   ==========================================================================
-  4. ANIMATIONS & EFFECTS
+  6. ANIMATIONS & EFFECTS
   ==========================================================================
 */
 
 /*
-  The main animated gradient.
-  This is now applied *selectively* (e.g., to the hero)
-  instead of on the whole body.
-*/
-.animated-gradient {
-  background: linear-gradient(-45deg, #1e3a8a, #3b0764, #1e3a8a, #3b0764);
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
-}
-
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/*
-  Upgraded "Scrollytelling" Animation.
-  Now includes a blur and a smoother cubic-bezier timing.
+  Scrollytelling Animation:
+  Smoother duration and easing.
 */
 .hidden-anim {
     opacity: 0;
     filter: blur(5px);
     transform: translateY(20px);
-    transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: all 0.7s ease-in-out;
 }
 
 .visible-anim {
@@ -217,7 +245,7 @@ header nav a.text-xl {
 
 /*
   ==========================================================================
-  5. MISC & LEGACY
+  7. MISC & LEGACY
   ==========================================================================
 */
 
@@ -226,7 +254,7 @@ header nav a.text-xl {
   display: none;
 }
 #demo-modal {
-  display: none; /* Changed from flex to none, JS will toggle to 'flex' */
+  display: none; /* JS will toggle to 'flex' */
 }
 .aspect-w-16 {
   position: relative;
@@ -242,7 +270,7 @@ header nav a.text-xl {
   left: 0;
 }
 
-/* Spinner (from original file) */
+/* Spinner (unchanged) */
 .spinner {
   display: inline-block;
   width: 1.5rem;
@@ -256,7 +284,7 @@ header nav a.text-xl {
   to { transform: rotate(360deg); }
 }
 
-/* Light mode (if user toggles) */
+/* Light mode (unchanged) */
 html:not(.dark) body {
     background: #f3f4f6;
     color: #111827;
