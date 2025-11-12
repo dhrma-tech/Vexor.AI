@@ -1,18 +1,6 @@
-// Replace your common.js with this
-
 document.addEventListener('DOMContentLoaded', () => {
     // --- Dark Mode Toggle ---
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
-          document.documentElement.classList.toggle('dark');
-          const isDark = document.documentElement.classList.contains('dark');
-          themeToggle.textContent = isDark ? '☀️' : '🌙';
-          if (typeof monaco !== 'undefined') {
-            monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs-light');
-          }
-        });
-    }
+    // REMOVED
 
     // --- "Start Free" Buttons ---
     document.body.addEventListener('click', (e) => {
