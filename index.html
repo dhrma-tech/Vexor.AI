@@ -25,6 +25,7 @@
           <a href="#/pricing" data-link>Users</a>
         </div>
         <div class="flex items-center space-x-4">
+          <button id="theme-toggle" class="p-2 text-gray-300 hover:text-white">🌙</button>
           <a href="#/app" data-link class="start-free-btn px-6 py-2">Start Free</a>
         </div>
       </div>
@@ -43,39 +44,35 @@
       </div>
     </div>
   </footer>
-<div id="vexor-chat-widget" class="fixed bottom-8 right-8 z-50">
+
+  <div id="vexor-chat-widget-container" class="fixed bottom-8 right-8 z-50">
     
     <div id="vexor-chat-popup" class="hidden w-80 sm:w-96 h-[60vh] bg-gray-800/80 backdrop-blur-md rounded-xl shadow-2xl flex flex-col transition-all duration-300 transform translate-y-4 opacity-0">
       
       <div class="flex justify-between items-center p-4 bg-gray-900/50 rounded-t-xl">
         <h3 class="text-lg font-semibold text-white">VEXOR</h3>
-        <button id="vexor-chat-close" class="text-gray-400 hover:text-white">&times;</button>
+        <button id="vexor-chat-close" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
       </div>
       
-      <div class="flex-1 p-4 space-y-4 overflow-y-auto">
+      <div id="vexor-message-area" class="flex-1 p-4 space-y-4 overflow-y-auto">
         <div class="flex">
           <div class="bg-gray-700 text-white p-3 rounded-lg max-w-xs">
             <p>Hi, I'm VEXOR. Ask me to analyze a code snippet, explain a concept, or help you use the site.</p>
           </div>
         </div>
-        
-        <div class="flex justify-end">
-          <div class="bg-blue-600 text-white p-3 rounded-lg max-w-xs">
-            <p>How do I test an async function?</p>
-          </div>
-        </div>
       </div>
       
-     <div class="p-4 bg-gray-900/50 rounded-b-xl">
-            <div class="flex space-x-2">
-              <input type="text" id="vexor-chat-input" placeholder="Ask VEXOR..." class="flex-1 px-4 py-2 border border-gray-600 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <button id="vexor-chat-send" class="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 008 16.171V11.5a1 1 0 012 0v4.671a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                </svg>
-              </button>
-            </div>
-          </div>
+      <div class="p-4 bg-gray-900/50 rounded-b-xl">
+        <div class="flex space-x-2">
+          <input type="text" id="vexor-chat-input" placeholder="Ask VEXOR..." class="flex-1 px-4 py-2 border border-gray-600 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <button id="vexor-chat-send" class="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 008 16.171V11.5a1 1 0 012 0v4.671a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <button id="vexor-chat-toggle" class="bg-blue-600 text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,12 +80,13 @@
       </svg>
     </button>
   </div>
-  <div id="demo-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center">
+
+  <div id="demo-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center">
     <div class="bg-slate-950/80 backdrop-blur-lg border border-violet-500/10 shadow-glow-violet w-11/12 md:w-3/4 lg:w-1/2 max-w-4xl rounded-lg shadow-2xl relative">
       <button id="close-modal-btn" class="absolute -top-3 -right-3 bg-red-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold z-10">&times;</button>
       <div class="aspect-w-16 aspect-h-9">
         <iframe 
-          src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+          src="https://www.youtube.com/embed/X6WoPNB8-h8?si=WAaxdT2ZWa4_x23f" 
           frameborder="0" 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
           allowfullscreen
@@ -103,23 +101,5 @@
 
   <script src="common.js"></script>
   <script src="app.js" type="module"></script>
-
-  <button id="vexor-chat-toggle" class="fixed bottom-5 right-5 start-free-btn rounded-full w-14 h-14 flex items-center justify-center font-bold text-2xl z-50 shadow-lg">?</button>
-
-  <div id="vexor-chat-widget" class="hidden fixed bottom-24 right-5 w-full max-w-md h-auto max-h-[70vh] flex flex-col glowing-card z-50">
-    <div class="p-3 border-b border-slate-700/50">
-      <h3 class="font-bold text-white">Vexor Assistant</h3>
-    </div>
-    
-    <div id="vexor-chat-history" class="p-4 flex-1 h-96 overflow-y-auto">
-      <div class="text-slate-300 text-sm p-2 bg-slate-800 rounded-lg">
-        Ask me anything about code, performance, or tests!
-      </div>
-    </div>
-    
-    <div class="p-3 border-t border-slate-700/50">
-      <input id="vexor-chat-input" type="text" class="w-full bg-slate-950/80 border-slate-700/50 rounded-md p-2" placeholder="Spar with the AI...">
-    </div>
-  </div>
-  </body>
+</body>
 </html>
