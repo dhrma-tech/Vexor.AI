@@ -246,8 +246,8 @@ app.post('/pagespeed', async (req, res) => {
         res.status(500).send({ error: `Failed to analyze the URL: ${error.message}` });
     }
 });
-// ... after your /pagespeed endpoint ...
 
+// --- NEW: Vexor Assistant Chat Endpoint ---
 app.post('/chat', async (req, res) => {
     const { message } = req.body;
     
@@ -280,6 +280,8 @@ app.post('/chat', async (req, res) => {
         res.status(500).send({ error: `An unexpected server error occurred: ${error.message}` });
     }
 });
+
+
 // --- Server Listener ---
 const server = app.listen(PORT, () => {
     console.log(`✅ VEXOR.AI server listening on port ${PORT}`);
