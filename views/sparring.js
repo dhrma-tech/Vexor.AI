@@ -6,7 +6,286 @@ let testEditor;
 function typeEffect(element, text, speed = 50) {
     let i = 0;
     element.setValue('');
+    function type() {import { RENDER_URL, getScoreColor } from '../utils.js';
+
+let editor;
+let testEditor;
+let currentLanguage = 'javascript'; // Keep track of the current language
+
+// NEW: Example code snippets for different languages
+const exampleSnippets = {
+    javascript: `function example(a, b) {\n  return a + b;\n}`,
+    python: `def example(a, b):\n  return a + b\n`
+};
+
+function typeEffect(element, text, speed = 50) {
+    let i = 0;
+    element.setValue('');
     function type() {
+        if (i < text.length) {
+            element.setValue(element.getValue() + text.charAt(i));
+            i++;
+            setTimeout(type, speed);
+        }
+    }
+    type();
+}
+
+const SparringView = {
+    render: async () => {
+        return `
+        <section class="bg-transparent py-20 bg-grid"> 
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1>The AI Sparring Partner for Your Code</h1>
+            <p class="text-xl mt-4 mb-8 max-w-3xl mx-auto">Paste your functions, get instant tests, refactor suggestions, or explanations. No setup, instant value.</p>
+            
+            <div class="max-w-xl mx-auto mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-1">
+                    <label for="language-select" class="block text-sm font-medium text-gray-400 mb-1 text-left">Language</label>
+                    <select id="language-select" class="w-full px-4 py-3">
+                        <option value="javascript" selected>JavaScript</option>
+                        <option value="python">Python</option>
+                    </select>
+                </div>
+                <div class="md:col-span-1">
+                    <label for="function-name-input" class="block text-sm font-medium text-gray-400 mb-1 text-left">Function Name</label>
+                    <input type="text" id="function-name-input" placeholder="Function name (if JS)" class="w-full px-4 py-3">
+                </div>
+                <div class="md:col-span-1">
+                    <label for="personality-select" class="block text-sm font-medium text-gray-400 mb-1 text-left">Test Personality</label>
+                    <select id="personality-select" class="w-full px-4 py-3">
+                        <option value="engineer">Senior Engineer</option>
+                        <option value="drill_sergeant">QA Drill Sergeant</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="action-tabs" class="flex flex-row gap-4 justify-center mb-12">
+              <button data-mode="assert" class="action-tab active-tab flex-1 px-8 py-3">Generate Tests</button>
+              <button data-mode="refactor" class="action-tab flex-1 px-8 py-3">Refactor Code</button>
+              <button data-mode="explain" class="action-tab flex-1 px-8 py-3">Explain Code</button>
+            </div>
+
+            <div id="editor-layout" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+              
+              <div id="editor-wrapper" class="glowing-card p-4">
+                <label class="block text-lg font-medium mb-2">Your Code (<span id="editor-lang-label">JavaScript</span>)</label>
+                <div id="editor" style="height: 300px;"></div>
+              </div>
+              
+              <div id="test-editor-wrapper" class="glowing-card p-4">
+                <label class="block text-lg font-medium mb-2">AI Generated Output (<span id="test-editor-lang-label">JavaScript</span>)</label>
+                <div id="test-editor" style="height: 300px;"></div>
+              </div>
+              
+              <div id="results-wrapper" class="md:col-span-2 glowing-card p-4">
+                <label class="block text-lg font-medium mb-2">Results</label>
+                <div id="results-panel" class="bg-transparent p-0">
+                  Click a button above to get started...
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        `;
+    },
+    after_render: async () => {
+        const functionNameInput = document.getElementById('function-name-input');
+        const languageSelect = document.getElementById('language-select');
+        const editorLangLabel = document.getElementById('editor-lang-label');
+        const testEditorLangLabel = document.getElementById('test-editor-lang-label');
+
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            const theme = 'vs-dark'; // Hardcoded dark theme
+
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: '',
+                language: 'javascript',
+                theme: theme,
+                automaticLayout: true,
+                minimap: { enabled: false },
+                background: 'transparent'
+            });
+
+            testEditor = monaco.editor.create(document.getElementById('test-editor'), {
+                value: '// AI-generated tests will appear here...',
+                language: 'javascript',
+                theme: theme,
+                automaticLayout: true,
+                readOnly: true,
+                minimap: { enabled: false },
+                background: 'transparent'
+            });
+
+            // Initial code type effect
+            typeEffect(editor, exampleSnippets.javascript, 75);
+
+            // Auto-detect function name for JS
+            editor.onDidChangeModelContent(() => {
+                if (currentLanguage === 'javascript') {
+                    const code = editor.getValue();
+                    const match = code.match(/function\s+([a-zA-Z0-9_]+)\s*\(/);
+                    if (match && match[1]) {
+                        functionNameInput.value = match[1];
+                        functionNameInput.placeholder = "Function name auto-detected!";
+                    }
+                }
+            });
+
+            // NEW: Language change handler
+            languageSelect.addEventListener('change', (e) => {
+                currentLanguage = e.target.value;
+                const newLangLabel = currentLanguage.charAt(0).toUpperCase() + currentLanguage.slice(1);
+                
+                // Update editor language models
+                monaco.editor.setModelLanguage(editor.getModel(), currentLanguage);
+                monaco.editor.setModelLanguage(testEditor.getModel(), currentLanguage);
+                
+                // Update labels
+                editorLangLabel.textContent = newLangLabel;
+                testEditorLangLabel.textContent = newLangLabel;
+
+                // Set new example code and reset test editor
+                if (editor.getValue() !== exampleSnippets[currentLanguage]) {
+                    editor.setValue(exampleSnippets[currentLanguage] || `// ${currentLanguage} code goes here`);
+                }
+                testEditor.setValue(`// AI-generated ${currentLanguage} tests will appear here...`);
+                
+                // Toggle function name input
+                if (currentLanguage === 'python') {
+                    functionNameInput.value = '';
+                    functionNameInput.placeholder = 'N/A for Python tests';
+                    functionNameInput.disabled = true;
+                } else {
+                    functionNameInput.placeholder = 'Function name auto-detected...';
+                    functionNameInput.disabled = false;
+                }
+            });
+        });
+        
+        const actionTabs = document.getElementById('action-tabs');
+        actionTabs.addEventListener('click', (e) => {
+            const tab = e.target.closest('.action-tab');
+            if (!tab || tab.disabled) return;
+            const mode = tab.dataset.mode;
+            actionTabs.querySelectorAll('.action-tab').forEach(t => t.classList.remove('active-tab'));
+            tab.classList.add('active-tab');
+            adjustLayoutForMode(mode);
+            handleCodeAction(mode);
+        });
+
+        adjustLayoutForMode('assert');
+    },
+    unmount: () => {
+        if (editor) editor.dispose();
+        if (testEditor) testEditor.dispose();
+        editor = null;
+        testEditor = null;
+    }
+};
+
+// (This function remains the same)
+function adjustLayoutForMode(mode) {
+    const editorLayout = document.getElementById('editor-layout');
+    const testEditorWrapper = document.getElementById('test-editor-wrapper');
+    const resultsWrapper = document.getElementById('results-wrapper');
+    if (mode === 'explain') {
+        testEditorWrapper.style.display = 'none';
+        resultsWrapper.classList.remove('md:col-span-2');
+        resultsWrapper.classList.add('md:col-span-2');
+        editorLayout.classList.remove('md:grid-cols-2');
+        editorLayout.classList.add('md:grid-cols-1');
+    } else {
+        testEditorWrapper.style.display = 'block';
+        resultsWrapper.classList.add('md:col-span-2');
+        editorLayout.classList.remove('md:grid-cols-1');
+        editorLayout.classList.add('md:grid-cols-2');
+    }
+}
+
+// API Call Function - MODIFIED
+async function handleCodeAction(mode) {
+    if (!editor) return;
+
+    const code = editor.getValue();
+    const functionName = document.getElementById('function-name-input').value.trim();
+    const personality = document.getElementById('personality-select').value;
+    const language = document.getElementById('language-select').value; // NEW: Get selected language
+    
+    const resultsPanel = document.getElementById('results-panel');
+    const actionTabs = document.getElementById('action-tabs');
+
+    // MODIFIED: Only require functionName for JavaScript 'assert' mode
+    if (mode === 'assert' && language === 'javascript' && !functionName) {
+        alert('Please enter the name of the function you want to test (or paste code to auto-detect).');
+        return;
+    }
+
+    resultsPanel.innerHTML = '<div class="spinner"></div><p>Vexor is thinking...</p>';
+    if (mode !== 'explain') {
+        testEditor.setValue('');
+    }
+    actionTabs.querySelectorAll('.action-tab').forEach(btn => btn.disabled = true);
+
+    let endpoint = '';
+    let body = {};
+    
+    if (mode === 'assert') {
+        endpoint = `${RENDER_URL}/assert`;
+        // NEW: Send language and functionName (even if empty for Python)
+        body = { code, personality, language, functionName };
+    } else {
+        endpoint = `${RENDER_URL}/analyze`;
+        // NEW: Send language
+        body = { code, mode, language }; 
+    }
+
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Something went wrong');
+        }
+        
+        const data = await response.json();
+
+        // This part remains largely the same, but the 'data' object
+        // will now contain language-specific results from the new service.
+        if (mode === 'assert') {
+            testEditor.setValue(data.generated_tests);
+            const scoreColor = getScoreColor(data.score);
+            const resultsHeader = `
+<h3 class="text-xl font-bold mb-2">Test Results</h3>
+<div class="flex flex-wrap space-x-4 sm:space-x-6 mb-4">
+    <div><strong>Score:</strong> <span class="text-2xl font-bold" style="color: ${scoreColor};">${data.score}%</span></div>
+    <div><strong>Total:</strong> ${data.total_tests}</div>
+    <div class="text-green-400"><strong>Passed:</strong> ${data.passed}</div>
+    <div class="text-red-400"><strong>Failed:</strong> ${data.failed}</div>
+</div>
+            `;
+            resultsPanel.innerHTML = resultsHeader + '<pre>' + data.output + '</pre>';
+        } else if (mode === 'refactor') {
+            testEditor.setValue(data.content);
+            resultsPanel.innerHTML = `<h3 class="text-xl font-bold mb-2">Refactor Analysis</h3><pre>${data.analysis || 'Code refactored.'}</pre>`;
+        } else if (mode === 'explain') {
+            resultsPanel.innerHTML = `<h3 class="text-xl font-bold mb-2">Code Explanation</h3><pre>${data.content}</pre>`;
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        resultsPanel.innerHTML = `<h3 class="text-xl font-bold text-red-400 mb-2">An Error Occurred</h3><pre>${error.message}</pre>`;
+    } finally {
+        actionTabs.querySelectorAll('.action-tab').forEach(btn => btn.disabled = false);
+    }
+}
+
+export default SparringView;
         if (i < text.length) {
             element.setValue(element.getValue() + text.charAt(i));
             i++;
