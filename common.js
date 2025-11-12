@@ -1,3 +1,5 @@
+import { RENDER_URL } from './utils.js'; // <-- NEW: Import the RENDER_URL
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- Dark Mode Toggle ---
@@ -8,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
           const isDark = document.documentElement.classList.contains('dark');
           themeToggle.textContent = isDark ? '☀️' : '🌙';
           
-          // Check if Monaco is loaded before trying to set its theme
           if (typeof monaco !== 'undefined' && monaco.editor) {
             monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs-light');
           }
@@ -20,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const startButton = e.target.closest('.start-free-btn');
         if (startButton) {
             e.preventDefault();
-            // All "Start Free" buttons should navigate to the sparring app
             window.location.hash = '#/sparring';
         }
     });
@@ -51,9 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatClose = document.getElementById('vexor-chat-close');
     const messageArea = document.getElementById('vexor-message-area');
     const chatInput = document.getElementById('vexor-chat-input');
-    const chatSend = document.getElementById('vexor-chat-send'); // This line was failing
+    const chatSend = document.getElementById('vexor-chat-send');
 
-    // This check is crucial. If chatSend is null, this block is skipped.
     if (chatPopup && chatToggle && chatClose && messageArea && chatInput && chatSend) {
         
         chatPopup.classList.add('chat-hidden');
@@ -94,17 +93,47 @@ document.addEventListener('DOMContentLoaded', () => {
             messageArea.scrollTop = messageArea.scrollHeight;
         };
 
-        const handleSend = () => {
+        // --- UPDATED: This function now calls your backend API ---
+        const handleSend = async () => {
             const text = chatInput.value.trim();
-            if (text) {
-                addMessage('user', text);
-                chatInput.value = '';
+            if (!text) return;
+
+            addMessage('user', text);
+            chatInput.value = '';
+            chatSend.disabled = true;
+
+            // Add a temporary typing indicator
+            addMessage('vexor', '...');
+
+            try {
+                const response = await fetch(`${RENDER_URL}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Something went wrong');
+                }
                 
-                setTimeout(() => {
-                    addMessage('vexor', "I'm not fully connected yet, but I'm ready to help once my developer wires me up to the Groq API!");
-                }, 1000);
+                const data = await response.json();
+                
+                // Remove the "..." typing indicator
+                messageArea.removeChild(messageArea.lastChild);
+                addMessage('vexor', data.reply);
+
+            } catch (error) {
+                // Remove the "..." typing indicator
+                messageArea.removeChild(messageArea.lastChild);
+                addMessage('vexor', `Sorry, an error occurred: ${error.message}`);
+                console.error("Error in VEXOR chat:", error);
+            } finally {
+                chatSend.disabled = false;
+                chatInput.focus();
             }
         };
+        // --- End of updated function ---
 
         chatToggle.addEventListener('click', openChat);
         chatClose.addEventListener('click', closeChat);
@@ -117,5 +146,4 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         console.error("VEXOR Chatbot UI elements not found. Make sure all IDs are correct in index.html.");
     }
-
 });
