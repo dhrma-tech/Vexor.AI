@@ -1,3 +1,60 @@
+/* ... (keep all existing styles) ... */
+
+/* Modal Styles */
+#demo-modal.hidden {
+  display: none;
+}
+#demo-modal {
+  display: flex; /* Use flexbox for centering */
+}
+.aspect-w-16 {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+.aspect-h-9 {
+  /* No styles needed here */
+}
+.aspect-w-16 > iframe {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+
+
+/* Spinner (from original file) */
+.spinner {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+/* Results Panel */
+#results-panel {
+  background-color: #1e293b; /* Dark background */
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre-wrap; /* Allows text to wrap */
+  word-wrap: break-word; /* Breaks long words */
+  min-height: 150px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+#results-panel pre {
+    white-space: pre-wrap; /* Ensures pre content wraps */
+    word-wrap: break-word;
+}
 /* --- Add to the end of your style.css --- */
 
 /* "Fascinating" Animated Gradient Background */
@@ -52,4 +109,17 @@ html:not(.dark) header a:hover {
 }
 html:not(.dark) header #theme-toggle {
     color: #374151;
+}
+/* --- Add to the end of your style.css --- */
+
+/* "Scrollytelling" Animation Classes */
+.hidden-anim {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.visible-anim {
+    opacity: 1;
+    transform: translateY(0);
 }
