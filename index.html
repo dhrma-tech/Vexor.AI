@@ -1,22 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vexor.AI - Your AI Code Sparring Partner</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Import new fonts: Poppins and Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600&display=swap" rel="stylesheet">
-  <!-- Main stylesheet -->
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
 </head>
-<!-- Body is now pure black, text is white by default -->
 <body class="font-body bg-black text-white">
 
-  <!-- Header is now transparent, styles are in style.css -->
   <header>
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center py-4">
@@ -29,18 +25,14 @@
           <a href="#/pricing" data-link>Testimonials</a>
         </div>
         <div class="flex items-center space-x-4">
-          <button id="theme-toggle" class="p-2">🌙</button>
-          <!-- Main CTA button: new "pill" style -->
           <a href="#/app" data-link class="start-free-btn px-6 py-2">Start Free</a>
         </div>
       </div>
     </nav>
   </header>
 
-  <!-- The SPA router will render content here -->
   <main id="app-root"></main>
 
-  <!-- Footer is also black -->
   <footer class="bg-black text-white py-12 border-t border-slate-700/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h3 class="text-2xl font-bold mb-4">Ready to Spar?</h3>
@@ -52,7 +44,6 @@
     </div>
   </footer>
 
-  <!-- Demo Modal: Updated to new dark "card" style -->
   <div id="demo-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center">
     <div class="bg-slate-950/80 backdrop-blur-lg border border-violet-500/10 shadow-glow-violet w-11/12 md:w-3/4 lg:w-1/2 max-w-4xl rounded-lg shadow-2xl relative">
       <button id="close-modal-btn" class="absolute -top-3 -right-3 bg-red-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold z-10">&times;</button>
