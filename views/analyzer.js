@@ -7,10 +7,10 @@ const AnalyzerView = {
         <section id="pagespeed" class="py-20 bg-transparent text-white">
           <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl font-bold mb-4">Analyze Your Website's Performance</h2>
-            <p class="text-lg text-gray-300 mb-8">Enter a URL to get a free performance, accessibility, and SEO report.</p>
+            <p class="text-lg text-slate-300 mb-8">Enter a URL to get a free performance, accessibility, and SEO report.</p>
             <div class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
-              <input type="url" id="url-input" placeholder="https://example.com" class="flex-grow px-4 py-3 border border-gray-600 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <button id="analyze-btn" class="bg-blue-600 text-white px-8 py-3 rounded-md font-semibold hover:bg-blue-700 disabled:opacity-50">Analyze</button>
+              <input type="url" id="url-input" placeholder="https://example.com" class="flex-grow px-4 py-3 border border-gray-600 rounded-md bg-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <button id="analyze-btn" class="start-free-btn px-8 py-3 disabled:opacity-50">Analyze</button>
             </div>
             <div id="results-container" class="mt-12 grid md:grid-cols-4 gap-6 text-center" style="display: none;"></div>
           </div>
@@ -65,8 +65,9 @@ const AnalyzerView = {
                 { label: 'SEO', value: data.seo, color: getScoreColor(data.seo) },
             ];
             scores.forEach(score => {
+                // Using the new 'premium-card' class
                 const scoreCard = `
-                    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <div class="premium-card p-6">
                         <div class="text-5xl font-bold" style="color: ${score.color};">${score.value}</div>
                         <p class="text-gray-400 mt-2">${score.label}</p>
                     </div>
