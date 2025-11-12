@@ -2,7 +2,7 @@ import SparringView from './views/sparring.js';
 import AnalyzerView from './views/analyzer.js';
 import PricingView from './views/pricing.js';
 
-// This simple router maps URL paths to view objects
+// This simple router maps URL hashes to view objects
 const routes = {
     '/': SparringView,
     '/analyzer': AnalyzerView,
@@ -12,7 +12,8 @@ const routes = {
 let currentView = null;
 
 const router = async () => {
-    const path = window.location.pathname;
+    // Get the path from the hash, or default to "/"
+    const path = window.location.hash.slice(1) || '/';
     const view = routes[path] || routes['/']; // Default to Sparring view
 
     // 1. Unmount the old view (if it has an unmount method)
@@ -40,16 +41,22 @@ const router = async () => {
 document.body.addEventListener('click', e => {
     if (e.target.matches('[data-link]')) {
         e.preventDefault();
-        const href = e.target.getAttribute('href');
-        if (window.location.pathname !== href) {
-            history.pushState(null, null, href);
-            router();
+        const newHash = e.target.getAttribute('href');
+        if (window.location.hash !== newHash) {
+            window.location.hash = newHash;
+            // The 'hashchange' event will trigger the router
         }
     }
 });
 
-// Handle browser back/forward buttons
-window.addEventListener('popstate', router);
+// Listen for hash changes (browser back/forward or link clicks)
+window.addEventListener('hashchange', router);
 
 // Load the router on initial page load
-document.addEventListener('DOMContentLoaded', router);
+document.addEventListener('DOMContentLoaded', () => {
+    // Set default hash if none exists
+    if (!window.location.hash) {
+        window.location.hash = '#/';
+    }
+    router();
+});
