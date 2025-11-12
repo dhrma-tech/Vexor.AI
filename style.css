@@ -398,3 +398,47 @@ input[type="url"], input[type="text"], select {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+/* --- Add to the end of your style.css --- */
+
+/* "Scrollytelling" Animation Classes */
+.hidden-anim {
+    opacity: 0;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* New directional animations */
+.hidden-anim-left {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.hidden-anim-right {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.visible-anim {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+}
+
+/* "Fascinating" Fake Code Editor Styles */
+.fake-code-editor {
+    background-color: #1e293b; /* vs-dark background */
+    border: 1px solid #334155;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    height: 300px;
+    overflow: hidden;
+    font-family: 'Courier New', Courier, monospace;
+}
+.fake-code-editor pre {
+    margin: 0;
+}
+.fake-code-editor .token-comment { color: #6a9955; }
+.fake-code-editor .token-keyword { color: #569cd6; }
+.fake-code-editor .token-function { color: #dcdcaa; }
+.fake-code-editor .token-string { color: #ce9178; }
+.fake-code-editor .token-number { color: #b5cea8; }
