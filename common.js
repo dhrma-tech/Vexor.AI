@@ -1,3 +1,5 @@
+// Replace your common.js with this
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- Dark Mode Toggle ---
     const themeToggle = document.getElementById('theme-toggle');
@@ -6,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
           document.documentElement.classList.toggle('dark');
           const isDark = document.documentElement.classList.contains('dark');
           themeToggle.textContent = isDark ? '☀️' : '🌙';
-          // Tries to set Monaco theme if it exists, but doesn't fail if it doesn't
           if (typeof monaco !== 'undefined') {
             monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs-light');
           }
@@ -15,15 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- "Start Free" Buttons ---
     document.body.addEventListener('click', (e) => {
-        if (e.target.classList.contains('start-free-btn')) {
+        // Find the closest 'start-free-btn' or 'data-link' to the clicked element
+        const startButton = e.target.closest('.start-free-btn');
+        if (startButton) {
             e.preventDefault();
-            // If we are on the main page, just scroll
-            if (window.location.hash === '#/') {
-                 document.getElementById('editor-container')?.scrollIntoView({ behavior: 'smooth' });
+            
+            // Check if it's also a data-link (like in the header)
+            if (startButton.matches('[data-link]')) {
+                // If it is, let the main router handle it
+                window.location.hash = startButton.getAttribute('href');
             } else {
-                // If on another page, navigate to the main page hash
-                window.location.hash = '#/';
-                // The router will automatically pick up the change
+                // If it's just a button (like in the footer), go to the app
+                window.location.hash = '#/app';
             }
         }
     });
