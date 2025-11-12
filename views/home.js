@@ -1,10 +1,8 @@
 const HomeView = {
     render: async () => {
         return `
-        <!-- Hero section with grid and new SVG arc glow -->
-        <section class="hero-grid relative flex flex-col justify-center items-center text-center" style="height: 90vh; overflow: hidden;">
+        <section class="bg-grid relative flex flex-col justify-center items-center text-center" style="height: 90vh; overflow: hidden;">
           
-          <!-- Glowing Arc SVG -->
           <svg
             viewBox="0 0 1000 300"
             preserveAspectRatio="xMidYMid meet"
@@ -30,11 +28,9 @@ const HomeView = {
             />
           </svg>
 
-          <!-- Hero Content (z-index 1) -->
           <div class="relative z-10 flex flex-col items-center p-4">
             <h1 class="relative animate-fade-in">
               The AI Sparring Partner for Your Code
-              <!-- Light reveal animation -->
               <span class="h1-reveal-light"></span>
             </h1>
             <p class="text-xl text-slate-200 mt-6 mb-8 max-w-3xl mx-auto animate-fade-in-delay-1">
@@ -67,19 +63,25 @@ const HomeView = {
                         Try the Test Generator &rarr;
                     </a>
                 </div>
-                <!-- Editor preview now wrapped in a glowing card -->
-                <div class="glowing-card p-4">
-                    <label class="block text-sm font-medium mb-2 text-gray-400">AI Generated Tests</label>
-                    <div id="test-editor-preview" style="height: 300px;"></div>
+                
+                <div class="phone-mockup">
+                    <div class="phone-glow"></div>
+                    <div class="phone-screen">
+                        <h3 class="text-2xl text-slate-400">Vexor.AI</h3>
+                        <p class="text-violet-400 mt-4">Connecting...</p>
+                        <svg class="w-16 h-16 text-violet-400 animate-spin mt-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
                 </div>
+
             </div>
         </section>
 
-        <!-- "Analyze Any Website" section, restyled as "Stats" -->
         <section class="py-32 hidden-anim">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
                 
-                <!-- NEW Digital Globe Stats Layout -->
                 <div class="stats-container">
                     <div class="flex-shrink-0">
                       <div class="digital-globe"></div>
@@ -120,7 +122,6 @@ const HomeView = {
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 class="text-center mb-12">Devs Love Vexor</h2>
               <div class="grid md:grid-cols-3 gap-8">
-                <!-- premium-card is now glowing-card via style.css -->
                 <blockquote class="premium-card p-6">
                   <p class="mb-4">"Caught 15 edge cases I missed—game-changer for my side project."</p>
                   <cite class="font-semibold text-white not-italic">– Asmit, Indie Dev</cite>
@@ -153,32 +154,6 @@ const HomeView = {
 
         const hiddenElements = document.querySelectorAll('.hidden-anim');
         hiddenElements.forEach(el => observer.observe(el));
-
-        // --- Monaco Editor Preview ---
-        const previewCode = `
-describe('example', () => {
-  test('should return 3 for 1 + 2', () => {
-    expect(example(1, 2)).toBe(3);
-  });
-
-  test('should handle negative numbers', () => {
-    expect(example(-1, -1)).toBe(-2);
-  });
-});
-        `;
-
-        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
-        require(['vs/editor/editor.main'], function() {
-            monaco.editor.create(document.getElementById('test-editor-preview'), {
-                value: previewCode,
-                language: 'javascript',
-                theme: 'vs-dark',
-                automaticLayout: true,
-                readOnly: true,
-                minimap: { enabled: false },
-                background: 'transparent' // Make editor bg transparent
-            });
-        });
     },
     unmount: () => {
         console.log("Home view unmounted");
