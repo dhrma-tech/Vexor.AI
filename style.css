@@ -7,94 +7,54 @@
 
 /*
   ==========================================================================
-  1. BASE & TYPOGRAPHY
+  1. THEME & VARIABLE DEFINITIONS
+  ==========================================================================
+*/
+:root {
+  --neon-violet: #9D00FF;
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --bg-dark-card: rgba(14, 19, 32, 0.8); /* bg-slate-950/80 */
+}
+
+/*
+  ==========================================================================
+  2. BASE & TYPOGRAPHY
   ==========================================================================
 */
 @layer base {
-  /*
-    New background: Pure black for maximum contrast, like the video.
-  */
   body {
-    @apply bg-black text-slate-200 antialiased;
+    @apply bg-black text-white antialiased;
+    font-family: var(--font-body);
   }
 
-  /*
-    Updated h1 gradient to use the new violet accent.
-  */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    @apply font-bold; /* Poppins is already bold, but this ensures it */
+  }
+
   h1 {
-    @apply text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-violet-400;
+    @apply text-4xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-white to-[var(--neon-violet)];
   }
   h2 {
-    @apply text-3xl font-bold text-white;
+    @apply text-3xl text-white;
   }
   h3 {
-    @apply text-2xl font-bold text-white;
+    @apply text-2xl text-white;
   }
   
   p, blockquote {
-    @apply text-lg text-slate-300;
+    @apply text-lg text-slate-200; /* Brighter text for paragraphs */
   }
 
-  /*
-    Global link styling updated to violet.
-  */
   a {
-    @apply text-violet-400 transition-colors duration-200;
+    color: var(--neon-violet);
+    @apply transition-colors duration-200;
   }
   a:hover {
-    @apply text-violet-300 underline;
+    filter: brightness(1.2);
   }
 }
-
-/*
-  ==========================================================================
-  2. HERO SECTION (New Effects)
-  ==========================================================================
-*/
-
-/*
-  This class creates the large, circular glow at the top
-  of the hero, similar to the arc in the video.
-*/
-.hero-glow {
-  position: relative;
-  overflow: hidden;
-}
-.hero-glow::before {
-  content: '';
-  position: absolute;
-  top: -20%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 700px;
-  height: 700px;
-  background-image: radial-gradient(circle, rgba(139, 92, 246, 0.25), transparent 60%); /* violet-500 glow */
-  opacity: 0.7;
-  z-index: 0;
-}
-
-/*
-  This adds the subtle grid pattern seen in the video.
-*/
-.hero-grid {
-  position: relative;
-}
-.hero-grid::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 2rem 2rem;
-  opacity: 0.5;
-  z-index: 0;
-}
-
-/* We need to make sure the hero content sits *above* the grid/glow */
-.hero-glow > *, .hero-grid > * {
-  position: relative;
-  z-index: 1;
-}
-
 
 /*
   ==========================================================================
@@ -102,105 +62,97 @@
   ==========================================================================
 */
 header {
-  /* Darker, glass-like header */
-  @apply sticky top-0 z-50 bg-black/70 backdrop-blur-md border-b border-slate-700/50;
+  /* Invisible header, as requested */
+  @apply sticky top-0 z-50 bg-transparent;
 }
 
 header nav a {
-  @apply text-slate-200 font-medium no-underline transition-colors duration-200;
+  @apply text-white font-medium no-underline transition-colors duration-200;
 }
+
 header nav a:hover {
-  @apply text-violet-400;
+  color: var(--neon-violet);
 }
+
 header nav a.text-xl {
   @apply text-white font-bold no-underline;
 }
 
 /*
   ==========================================================================
-  4. BUTTONS & COMPONENTS
+  4. BUTTONS & TABS
   ==========================================================================
 */
 
-/*
-  Updated CTA button with violet glow.
-*/
+/* Main CTA Button: White, pill-shaped, black text */
 .start-free-btn {
-  @apply bg-violet-600 text-white font-semibold rounded-md shadow-lg transition-all duration-300 ease-in-out;
-  @apply hover:bg-violet-500 hover:shadow-xl hover:shadow-violet-500/30 transform hover:-translate-y-0.5;
+  @apply bg-white text-black rounded-full font-bold;
+  @apply transition-transform duration-200 ease-in-out;
+}
+.start-free-btn:hover {
+  @apply transform scale-[1.03];
 }
 
-/*
-  Updated Action Tabs with violet accent.
-*/
+/* Secondary Button: White outline, pill-shaped */
+.secondary-btn {
+  @apply bg-transparent text-white rounded-full font-bold border-2 border-white;
+  @apply transition-all duration-200 ease-in-out;
+}
+.secondary-btn:hover {
+  @apply transform scale-[1.03] bg-white/5;
+}
+
+/* Sparring Tabs */
 .action-tab {
-  @apply font-semibold rounded-md shadow-md transition-all duration-300 ease-in-out;
+  @apply font-semibold rounded-full transition-all duration-200 ease-in-out;
   @apply disabled:opacity-50;
 }
 
+/* Active Tab: Matches .start-free-btn */
 .action-tab.active-tab {
-  @apply bg-violet-600 text-white shadow-lg shadow-violet-500/30;
-  @apply transform -translate-y-0.5;
+  @apply bg-white text-black transform scale-[1.03];
 }
 
+/* Inactive Tab: White text, glows violet on hover */
 .action-tab:not(.active-tab) {
-  /* Darker inactive tabs */
-  @apply bg-slate-800 text-slate-200;
+  @apply bg-transparent text-white;
 }
-
 .action-tab:not(.active-tab):not(:disabled):hover {
-  @apply bg-slate-700 transform -translate-y-0.5;
+  color: var(--neon-violet);
+  text-shadow: 0 0 8px var(--neon-violet);
 }
 
 /*
-  Glassmorphism Cards:
-  More transparent, with backdrop-blur and a violet glow.
+  ==========================================================================
+  5. CARDS & PANELS (NEW GLOWING BOX STYLE)
+  ==========================================================================
 */
+.glowing-card {
+  background-color: var(--bg-dark-card);
+  border: 1px solid rgba(157, 0, 255, 0.1); /* border-violet-500/10 */
+  box-shadow: 0 0 25px -5px rgba(157, 0, 255, 0.15);
+  @apply rounded-lg backdrop-blur-lg;
+}
+
+/* Legacy .premium-card gets mapped to the new style */
 .premium-card {
-  @apply bg-slate-900/40 rounded-lg shadow-xl ring-1 ring-slate-700/50;
-  @apply backdrop-blur-lg; /* The "glass" effect */
-  position: relative;
-  overflow: hidden;
-}
-
-.premium-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  /* Updated glow to violet */
-  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent); /* violet-500 glow */
-  opacity: 0.7;
-  transition: all 0.3s;
-}
-
-.premium-card:hover::before {
-  opacity: 1;
-  transform: scaleX(1.5);
+  @apply glowing-card;
 }
 
 /*
   ==========================================================================
-  5. FORMS, EDITORS, & PANELS
+  6. FORMS, EDITORS, & PANELS
   ==========================================================================
 */
-
-/* Update focus ring color for inputs */
 input[type="url"], input[type="text"], select {
-  @apply bg-slate-800/70 border-slate-700;
-  @apply focus:ring-violet-500 focus:border-violet-500;
+  @apply bg-slate-950/80 border-slate-700/50 rounded-md;
+  @apply focus:ring-[var(--neon-violet)] focus:border-[var(--neon-violet)];
 }
 
-/*
-  Editor & Results Panel Styling
-*/
+/* Make panels and editors use the new glowing card style */
 #results-panel {
-  /* Match the new glass-card style */
-  @apply bg-slate-900/40 ring-1 ring-slate-700/50 backdrop-blur-lg;
+  @apply glowing-card;
   color: #e2e8f0;
-  border-radius: 0.5rem;
   padding: 1.5rem;
   font-family: 'Courier New', Courier, monospace;
   white-space: pre-wrap;
@@ -210,9 +162,16 @@ input[type="url"], input[type="text"], select {
   overflow-y: auto;
 }
 
-/* Add a subtle ring to the editors */
+/* Apply card style to the *wrappers* */
+#editor-wrapper.glowing-card,
+#test-editor-wrapper.glowing-card,
+#results-wrapper.glowing-card {
+  @apply p-4; /* Add padding to the wrapper */
+}
+
+/* The editors themselves are transparent inside the card */
 #editor, #test-editor, #test-editor-preview {
-  @apply rounded-lg ring-1 ring-slate-700/50;
+  @apply rounded-lg;
 }
 
 #results-panel pre {
@@ -222,21 +181,85 @@ input[type="url"], input[type="text"], select {
 
 /*
   ==========================================================================
-  6. ANIMATIONS & EFFECTS
+  7. HERO & ANIMATIONS
   ==========================================================================
 */
+/* The subtle grid pattern for the hero */
+.hero-grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 2.5rem 2.5rem; /* Larger grid */
+  opacity: 0.5;
+  z-index: 0;
+}
+/* Ensure content is above the grid */
+.hero-grid > * {
+  position: relative;
+  z-index: 1;
+}
 
-/*
-  Scrollytelling Animation:
-  Smoother duration and easing.
-*/
+/* Intro Animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fade-in-delay-1 {
+  0%, 50% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in-delay-2 {
+  0%, 75% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes reveal-light {
+  0% { transform: translateX(-100%) skew(-10deg); opacity: 0; }
+  25% { opacity: 0.6; }
+  100% { transform: translateX(100%) skew(-10deg); opacity: 0; }
+}
+@keyframes arc-draw {
+  from { stroke-dashoffset: 1000; }
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-fade-in {
+  opacity: 0;
+  animation: fade-in 1s ease-out 0.5s forwards;
+}
+.animate-fade-in-delay-1 {
+  opacity: 0;
+  animation: fade-in-delay-1 1s ease-out 1s forwards;
+}
+.animate-fade-in-delay-2 {
+  opacity: 0;
+  animation: fade-in-delay-2 1s ease-out 1.2s forwards;
+}
+
+/* Light streak reveal animation */
+.h1-reveal-light {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+  background-size: 200% 100%;
+  opacity: 0;
+  animation: reveal-light 1.5s ease-in-out 0.8s forwards;
+}
+
+/* Arc SVG animation */
+.hero-arc-svg {
+  animation: arc-draw 2s ease-out 0.2s forwards;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+
+/* Scrollytelling Animation */
 .hidden-anim {
     opacity: 0;
     filter: blur(5px);
     transform: translateY(20px);
     transition: all 0.7s ease-in-out;
 }
-
 .visible-anim {
     opacity: 1;
     filter: blur(0);
@@ -245,31 +268,53 @@ input[type="url"], input[type="text"], select {
 
 /*
   ==========================================================================
-  7. MISC & LEGACY
+  8. DIGITAL GLOBE (New Component for Home)
   ==========================================================================
 */
-
-/* Modal Styles */
-#demo-modal.hidden {
-  display: none;
+.stats-container {
+  @apply flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24;
 }
-#demo-modal {
-  display: none; /* JS will toggle to 'flex' */
-}
-.aspect-w-16 {
+.digital-globe {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
   position: relative;
-  width: 100%;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  overflow: hidden;
+  /* Glowing blue/purple globe */
+  background: radial-gradient(circle at 30% 30%, #fff, #a78bfa 40%, #5b21b6 100%);
+  box-shadow: 0 0 20px #a78bfa, 0 0 40px #a78bfa, inset 0 0 10px #fff;
 }
-.aspect-h-9 {}
-.aspect-w-16 > iframe {
+/* Grid lines for the globe */
+.digital-globe::before {
+  content: '';
   position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.2) 1px, transparent 1px), 
+    linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px);
+  background-size: 1.5rem 1.5rem;
+  opacity: 0.5;
+  animation: globe-scroll 5s linear infinite;
+}
+@keyframes globe-scroll {
+  from { background-position: 0 0; }
+  to { background-position: -3rem 0; }
+}
+.stats-text {
+  @apply text-center;
+}
+.stats-number {
+  @apply text-5xl font-bold text-white;
+}
+.stats-label {
+  @apply text-slate-300 mt-2;
 }
 
+/*
+  ==========================================================================
+  9. MISC & LEGACY
+  ==========================================================================
+*/
 /* Spinner (unchanged) */
 .spinner {
   display: inline-block;
@@ -284,44 +329,50 @@ input[type="url"], input[type="text"], select {
   to { transform: rotate(360deg); }
 }
 
-/* Light mode (unchanged) */
+/* Light mode (Simplified) */
 html:not(.dark) body {
     background: #f3f4f6;
     color: #111827;
 }
-html:not(.dark) #app-root h1,
-html:not(.dark) #app-root h2,
-html:not(.dark) #app-root h3 {
+html:not(.dark) h1, html:not(.dark) h2, html:not(.dark) h3 {
     color: #111827;
 }
-html:not(.dark) #app-root p,
-html:not(.dark) #app-root blockquote {
+html:not(.dark) p, html:not(.dark) blockquote {
     color: #4b5563;
-}
-html:not(.dark) .premium-card {
-    background-color: #ffffff;
-    @apply ring-slate-200/50;
 }
 html:not(.dark) header {
     background-color: #ffffff/80;
-    @apply border-slate-200/50;
+    @apply border-b border-slate-200/50;
 }
-html:not(.dark) header a {
+html:not(.dark) header nav a {
     color: #374151;
 }
-html:not(.dark) header a:hover {
-    color: #1d4ed8;
+html:not(.dark) header nav a:hover {
+    color: var(--neon-violet);
 }
-html:not(.dark) header #theme-toggle {
-    color: #374151;
+html:not(.dark) .start-free-btn {
+    @apply bg-black text-white;
+}
+html:not(.dark) .secondary-btn {
+    @apply bg-transparent text-black border-black;
 }
 html:not(.dark) .action-tab:not(.active-tab) {
-    @apply bg-slate-200 text-slate-800;
+    @apply text-black;
 }
-html:not(.dark) .action-tab:not(.active-tab):not(:disabled):hover {
-    @apply bg-slate-300;
+html:not(.dark) .action-tab.active-tab {
+    @apply bg-black text-white;
+}
+html:not(.dark) .glowing-card {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(157, 0, 255, 0.2);
+    box-shadow: 0 0 25px -5px rgba(157, 0, 255, 0.1);
 }
 html:not(.dark) #results-panel {
-    @apply bg-white ring-slate-200/50;
-    color: #111827;
+    @apply text-black;
+}
+html:not(.dark) .stats-number {
+  @apply text-black;
+}
+html:not(.dark) .stats-label {
+  @apply text-slate-600;
 }
