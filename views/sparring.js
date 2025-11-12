@@ -24,7 +24,6 @@ const SparringView = {
             <h1>The AI Sparring Partner for Your Code</h1>
             <p class="text-xl mt-4 mb-8 max-w-3xl mx-auto">Paste your functions, get instant tests, refactor suggestions, or explanations. No setup, instant value.</p>
             
-            <!-- Inputs now use global styles -->
             <div class="max-w-xl mx-auto mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label for="function-name-input" class="block text-sm font-medium text-gray-400 mb-1 text-left">Function Name</label>
@@ -39,14 +38,12 @@ const SparringView = {
                 </div>
             </div>
 
-            <!-- Action Tabs: Updated to new pill style -->
             <div id="action-tabs" class="flex flex-row gap-4 justify-center mb-12">
               <button data-mode="assert" class="action-tab active-tab flex-1 px-8 py-3">Generate Tests</button>
               <button data-mode="refactor" class="action-tab flex-1 px-8 py-3">Refactor Code</button>
               <button data-mode="explain" class="action-tab flex-1 px-8 py-3">Explain Code</button>
             </div>
 
-            <!-- Editor Layout: Wrappers now have .glowing-card -->
             <div id="editor-layout" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
               
               <div id="editor-wrapper" class="glowing-card p-4">
@@ -73,7 +70,7 @@ const SparringView = {
     after_render: async () => {
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
         require(['vs/editor/editor.main'], function() {
-            const isDark = true; // Hardcode to dark theme for this aesthetic
+            // Hard-coded to dark theme
             const theme = 'vs-dark';
 
             const exampleCode = `function example(a, b) {\n  return a + b;\n}`;
@@ -85,7 +82,7 @@ const SparringView = {
                 theme: theme,
                 automaticLayout: true,
                 minimap: { enabled: false },
-                background: 'transparent' // Make editor bg transparent
+                background: 'transparent'
             });
 
             testEditor = monaco.editor.create(document.getElementById('test-editor'), {
@@ -95,7 +92,7 @@ const SparringView = {
                 automaticLayout: true,
                 readOnly: true,
                 minimap: { enabled: false },
-                background: 'transparent' // Make editor bg transparent
+                background: 'transparent'
             });
 
             typeEffect(editor, exampleCode, 75);
@@ -109,17 +106,8 @@ const SparringView = {
                     functionNameInput.placeholder = "Function name auto-detected!";
                 }
             });
-
-            // Theme toggle logic (though we're hardcoding dark)
-            const themeToggle = document.getElementById('theme-toggle');
-            if (themeToggle) {
-                themeToggle.addEventListener('click', () => {
-                    // This will just toggle light/dark mode for text/card colors
-                    document.documentElement.classList.toggle('dark');
-                    const isDark = document.documentElement.classList.contains('dark');
-                    monaco.editor.setTheme(isDark ? 'vs-dark' : 'vs-light');
-                });
-            }
+            
+            // Theme toggle logic removed
         });
         
         // Simplified Event Listener for Action Tabs
