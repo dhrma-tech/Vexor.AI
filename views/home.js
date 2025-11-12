@@ -29,10 +29,14 @@ const HomeView = {
           </svg>
 
           <div class="relative z-10 flex flex-col items-center p-4">
-            <h1 class="relative animate-fade-in">
-              The AI Sparring Partner for Your Code
-              <span class="h1-reveal-light"></span>
+            
+            <h1 class="h1-reveal-container">
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-[var(--neon-violet)]">
+                The AI Sparring Partner for Your Code
+              </span>
+              <span class="h1-comet-streak"></span>
             </h1>
+
             <p class="text-xl text-slate-200 mt-6 mb-8 max-w-3xl mx-auto animate-fade-in-delay-1">
                 Paste your functions. Get instant tests, refactors, and explanations. No setup, instant value.
             </p>
@@ -57,7 +61,7 @@ const HomeView = {
                 <div>
                     <h2>Find Every Edge Case</h2>
                     <p class="mt-4 mb-6">
-                        Stop guessing. Our AI generates a comprehensive Jest test suite for your functions, finding bugs you didn't know existed.
+                        Stop guessing. Our AI generates a comprehensive Jest test suite for your functions, finding bugs you've never seen.
                     </p>
                     <a href="#/app" data-link class="text-lg font-semibold">
                         Try the Test Generator &rarr;
@@ -118,8 +122,11 @@ const HomeView = {
             </div>
         </section>
 
-        <section class="py-32 hidden-anim">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section class="py-32 hidden-anim relative overflow-hidden">
+            <div class="eclipse-graphic"></div>
+            <div class="eclipse-glow"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
               <h2 class="text-center mb-12">Devs Love Vexor</h2>
               <div class="grid md:grid-cols-3 gap-8">
                 <blockquote class="premium-card p-6">
