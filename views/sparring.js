@@ -166,16 +166,21 @@ async function handleCodeAction(mode) {
     const resultsPanel = document.getElementById('results-panel');
     const actionTabs = document.getElementById('action-tabs');
 
+    // --- FIX: Disable buttons first ---
+    actionTabs.querySelectorAll('.action-tab').forEach(btn => btn.disabled = true);
+
+    // --- FIX: Check for functionName and RE-ENABLE buttons if it fails ---
     if (mode === 'assert' && !functionName) {
         alert('Please enter the name of the function you want to test (or paste code to auto-detect).');
-        return;
+        actionTabs.querySelectorAll('.action-tab').forEach(btn => btn.disabled = false); // Re-enable
+        return; // Exit
     }
 
     resultsPanel.innerHTML = '<div class="spinner"></div><p>Vexor is thinking...</p>';
     if (mode !== 'explain') {
         testEditor.setValue('');
     }
-    actionTabs.querySelectorAll('.action-tab').forEach(btn => btn.disabled = true);
+    // --- Button disabling was moved up ---
 
     let endpoint = '';
     let body = {};
@@ -229,5 +234,4 @@ async function handleCodeAction(mode) {
         actionTabs.querySelectorAll('.action-tab').forEach(btn => btn.disabled = false);
     }
 }
-
 export default SparringView;
