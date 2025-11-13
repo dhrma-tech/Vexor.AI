@@ -111,7 +111,7 @@ const HomeView = {
                 </blockquote>
                 <blockquote class="bg-gray-800 p-6 rounded-lg shadow-lg">
                   <p class="text-gray-300 mb-4">"Like having an AI QA engineer on demand."</p>
-                  <cite class="font-semibold text-white">– Marisha, Beginner Full-Stack Engineer</cite>
+                  <cite class="font-semibold text-white">– Shardul, Vajra DEVS</cite>
                 </blockquote>
               </div>
             </div>
