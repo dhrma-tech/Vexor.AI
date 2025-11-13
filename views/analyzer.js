@@ -60,7 +60,7 @@ const AnalyzerView = {
             const scores = [
                 { label: 'Performance', value: data.performance, color: getScoreColor(data.performance) },
                 { label: 'Accessibility', value: data.accessibility, color: getScoreColor(data.accessibility) },
-                { label: 'Best Practices', value: data.bestPractices, color: getScoreColor(data.bestPractces) },
+                { label: 'Best Practices', value: data.bestPractices, color: getScoreColor(data.bestPractices) },
                 { label: 'SEO', value: data.seo, color: getScoreColor(data.seo) },
             ];
             scores.forEach(score => {
